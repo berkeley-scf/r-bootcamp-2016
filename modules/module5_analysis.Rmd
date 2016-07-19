@@ -8,6 +8,8 @@
 # e.g. package and dataset loading
 library(plyr)
 library(reshape2)
+library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(lmtest)
 library(sandwich)
@@ -41,8 +43,8 @@ system.time(expr = solve(a=big.matrix)) # Compute time required to invert "big.m
 
 - For most applied researchers, "useful stuff" that can be done in R boils down to a few core items: 
 
-a) Carrying out operations and calculations across ***groups*** 
-b) ***Reshaping*** data to and from various formats
+a) ***Tidying*** data into the appropriate format
+b) Carrying out operations and calculations across ***groups***
 c) Attempting to ***describe relationships*** or conduct ***causal inference*** 
 
 # Group-wise Operations/example dataset
