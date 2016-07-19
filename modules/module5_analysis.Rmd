@@ -47,6 +47,95 @@ a) ***Tidying*** data into the appropriate format
 b) Carrying out operations and calculations across ***groups***
 c) Attempting to ***describe relationships*** or conduct ***causal inference*** 
 
+# Reshaping Data/reshape2
+
+- Often times, even before we're interested in doing all this group-wise stuff, we need to reshape our data.  For instance, datasets often arrive at your desk in wide (long) form and you need to convert them to long (wide) form.
+
+- Though base R does have commands for reshaping data (including **aggregate**, **by**, **tapply**, etc.), each of their input commands are slightly different and are only suited for specific reshaping tasks.
+
+- The **reshape2** package overcomes these argument and task inconsistencies to provide a simple, relatively fast way to alter the form of a data.frame.  The package contains effectively two commands, and their functions are in their names: **melt** and **cast**
+
+```{r}
+# Install the "reshape2" package (only necessary one time)
+# install.packages("reshape2") # Not Run
+
+# Load the "reshape2" package (necessary every new R session)
+library(reshape2)
+```
+
+# Reshaping Data/reshape2/melt
+
+- melt() is used to convert wide-form data to long-form.  The basic idea is to take your data.frame and melt it down to a minimal number of columns using two essential pieces of information:
+1) **Unit-of-Analysis identifiers**, or columns you *don't* want to melt down
+2) **Characteristic variables**, or columns you *do* want to melt down
+
+```{r, eval=FALSE}
+# Basic Call
+melt(data=, id.vars=, measure.vars=, variable.name=, value.name=)
+```
+
+- often data come in wide format and we need it in long format; for example, regression and plotting functions often need long format input
+
+To see how this works in practice, suppose we wanted to convert this data from its current wide format to an entirely long format.  How to proceed?
+
+**First**, select which columns you want to keep (i.e. not melt).  In this case, we're interested in having individual tips as the unit of analysis.  Unfortunately, there is no column containing an individual identification number in this data, so we'll just add one as "id":
+```{r}
+tips$id <- 1:nrow(tips)
+head(tips)
+```
+
+**Second**, select which columns we want to melt.  In this case, we'd like to melt every column except "id".
+
+With these two pieces of information, we're ready to melt down the data.frame:
+```{r}
+tips.melted <- melt(data=tips, id.vars="id", 
+     measure.vars=c("total_bill", "tip", "sex", "smoker", "day", "time", "size", "tip.pct"))
+head(x = tips.melted)
+# If you want to melt ALL columns that aren't ID variables, you can also omit the "measure.vars" argument
+tips.melted <- melt(data=tips, id.vars="id")
+head(x = tips.melted)
+```
+
+Note that melt collapses all of the measure variables into two columns: one containing the column/measurement name, the other containing the column/measurement value for that row.  By default, these columns are named "variable" and "value", though they can be customized using the "variable.name" and "value.name" arguments.  For example:
+```{r}
+tips.melted <- melt(data=tips, id.vars="id", 
+     measure.vars=c("total_bill", "tip", "sex", "smoker", "day", "time", "size", "tip.pct"),
+     variable.name="characteristic",
+     value.name="response")
+head(x = tips.melted)
+```
+
+Note also that one need not melt down all columns that aren't serving as ID columns.  The melted data.frame will only contain the values of the measure variables you select.  For instance:
+```{r}
+tips.melted <- melt(data=tips, id.vars="id", 
+     measure.vars=c("sex", "day"))
+head(x = tips.melted)
+```
+
+# Reshaping Data/reshape2/cast
+
+- There are two main cast functions in the reshape2 package for converting data from a long format to a wide format: **a**cast() (for producing **a**rrays) and **d**cast() (for producing **d**ata frames)
+
+- The generic call for (d)cast looks like this:
+
+```{r eval=FALSE}
+dcast(data=, formula=xvar1+xvar2 ~ yvar1+yvar2, value.var=, fun.aggregate=)
+```
+
+Some example usages:
+```{r}
+# Original data
+head(x = tips)
+# Cast a data.frame containing the individual column and columns containing the expansion of "age9" on the basis of its unique values
+tips.cast <- dcast(data=tips, formula=id~sex, value.var="tip.pct")
+head(x = tips.cast)
+# Previously melted data
+tips.melted <- melt(data = tips, id.vars = "id")
+head(x = tips.melted)
+# Cast a new data.frame from melted data.frame containing the individual column and expanding the "variable" column
+tips.cast <- dcast(data=tips.melted, formula=id~variable, value.var="value")
+head(x = tips.cast)
+```
 # Group-wise Operations/example dataset
 
 - The "tips" dataset was originally constructed by a waiter who recorded information about the tips he received over a period of several months
@@ -326,96 +415,6 @@ arrange(df = tips.summary, mean.tip.pct)
 
 # Arrange summarized data from lowest average tip to highest average tip
 arrange(df = tips.summary, desc(mean.tip.pct))
-```
-
-# Reshaping Data/reshape2
-
-- Often times, even before we're interested in doing all this group-wise stuff, we need to reshape our data.  For instance, datasets often arrive at your desk in wide (long) form and you need to convert them to long (wide) form.
-
-- Though base R does have commands for reshaping data (including **aggregate**, **by**, **tapply**, etc.), each of their input commands are slightly different and are only suited for specific reshaping tasks.
-
-- The **reshape2** package overcomes these argument and task inconsistencies to provide a simple, relatively fast way to alter the form of a data.frame.  The package contains effectively two commands, and their functions are in their names: **melt** and **cast**
-
-```{r}
-# Install the "reshape2" package (only necessary one time)
-# install.packages("reshape2") # Not Run
-
-# Load the "reshape2" package (necessary every new R session)
-library(reshape2)
-```
-
-# Reshaping Data/reshape2/melt
-
-- melt() is used to convert wide-form data to long-form.  The basic idea is to take your data.frame and melt it down to a minimal number of columns using two essential pieces of information:
-1) **Unit-of-Analysis identifiers**, or columns you *don't* want to melt down
-2) **Characteristic variables**, or columns you *do* want to melt down
-
-```{r, eval=FALSE}
-# Basic Call
-melt(data=, id.vars=, measure.vars=, variable.name=, value.name=)
-```
-
-- often data come in wide format and we need it in long format; for example, regression and plotting functions often need long format input
-
-To see how this works in practice, suppose we wanted to convert this data from its current wide format to an entirely long format.  How to proceed?
-
-**First**, select which columns you want to keep (i.e. not melt).  In this case, we're interested in having individual tips as the unit of analysis.  Unfortunately, there is no column containing an individual identification number in this data, so we'll just add one as "id":
-```{r}
-tips$id <- 1:nrow(tips)
-head(tips)
-```
-
-**Second**, select which columns we want to melt.  In this case, we'd like to melt every column except "id".
-
-With these two pieces of information, we're ready to melt down the data.frame:
-```{r}
-tips.melted <- melt(data=tips, id.vars="id", 
-     measure.vars=c("total_bill", "tip", "sex", "smoker", "day", "time", "size", "tip.pct"))
-head(x = tips.melted)
-# If you want to melt ALL columns that aren't ID variables, you can also omit the "measure.vars" argument
-tips.melted <- melt(data=tips, id.vars="id")
-head(x = tips.melted)
-```
-
-Note that melt collapses all of the measure variables into two columns: one containing the column/measurement name, the other containing the column/measurement value for that row.  By default, these columns are named "variable" and "value", though they can be customized using the "variable.name" and "value.name" arguments.  For example:
-```{r}
-tips.melted <- melt(data=tips, id.vars="id", 
-     measure.vars=c("total_bill", "tip", "sex", "smoker", "day", "time", "size", "tip.pct"),
-     variable.name="characteristic",
-     value.name="response")
-head(x = tips.melted)
-```
-
-Note also that one need not melt down all columns that aren't serving as ID columns.  The melted data.frame will only contain the values of the measure variables you select.  For instance:
-```{r}
-tips.melted <- melt(data=tips, id.vars="id", 
-     measure.vars=c("sex", "day"))
-head(x = tips.melted)
-```
-
-# Reshaping Data/reshape2/cast
-
-- There are two main cast functions in the reshape2 package for converting data from a long format to a wide format: **a**cast() (for producing **a**rrays) and **d**cast() (for producing **d**ata frames)
-
-- The generic call for (d)cast looks like this:
-
-```{r eval=FALSE}
-dcast(data=, formula=xvar1+xvar2 ~ yvar1+yvar2, value.var=, fun.aggregate=)
-```
-
-Some example usages:
-```{r}
-# Original data
-head(x = tips)
-# Cast a data.frame containing the individual column and columns containing the expansion of "age9" on the basis of its unique values
-tips.cast <- dcast(data=tips, formula=id~sex, value.var="tip.pct")
-head(x = tips.cast)
-# Previously melted data
-tips.melted <- melt(data = tips, id.vars = "id")
-head(x = tips.melted)
-# Cast a new data.frame from melted data.frame containing the individual column and expanding the "variable" column
-tips.cast <- dcast(data=tips.melted, formula=id~variable, value.var="value")
-head(x = tips.cast)
 ```
 
 # Describing Relationships & Causal Inference
