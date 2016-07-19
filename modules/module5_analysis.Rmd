@@ -1,5 +1,6 @@
 % R Bootcamp, Module 5: Useful Stuff
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
+% Rochelle Terman (rterman@gmail.com)
 % Chris Krogslund (ckrogslund@berkeley.edu)
 
 ```{r chunksetup, include=FALSE} 
