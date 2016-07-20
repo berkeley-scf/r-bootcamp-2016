@@ -1,7 +1,6 @@
 % R Bootcamp, Module 5: Useful Stuff
 % August 2016, UC Berkeley
 % Rochelle Terman (rterman@gmail.com)
-% Chris Krogslund (ckrogslund@berkeley.edu)
 
 ```{r chunksetup, include=FALSE} 
 # include any code here you don't want to show up in the document,
@@ -13,12 +12,14 @@ library(tidyr)
 library(ggplot2)
 library(lmtest)
 library(sandwich)
-if(!('modules' %in% unlist(strsplit(getwd(), split = '/')))) setwd('modules')
+#if(!('modules' %in% unlist(strsplit(getwd(), split = '/')))) setwd('modules')
+setwd("~/Dropbox/berkeley/Git-Repos/r-bootcamp-2016/modules")
 ```
 
 # What exactly is "useful stuff" in R?
 
-- For some, it might just be basic calculations
+For some, it might just be basic calculations
+
 ```{r}
 63.24 * pi # Multiply 63.24 by pi
 exp(x = 4.39) # Raise e to the power of 4.39
@@ -26,7 +27,8 @@ log(x = 1.7) # Take the log of 1.7
 tan(x = 58) # Compute the tangent of 58
 ```
 
-- For others, it might be large or complex mathematical operations
+For others, it might be large or complex mathematical operations
+
 ```{r}
 # Take one million samples from the standard normal distribution
 data.sample <- rnorm(n=1000000, mean=0, sd=1) 
@@ -41,31 +43,32 @@ system.time(expr = solve(a=big.matrix)) # Compute time required to invert "big.m
 
 # Useful Stuff: Applied Research Edition
 
-- For most applied researchers, "useful stuff" that can be done in R boils down to a few core items: 
+For most applied researchers, "useful stuff" that can be done in R boils down to a few core items: 
 
-a) ***Tidying*** data into the appropriate format
-b) Carrying out operations and calculations across ***groups***
-c) Attempting to ***describe relationships*** or conduct ***causal inference*** 
+1) ***Tidying*** data into the appropriate format
+2) Carrying out operations and calculations across ***groups***
+3) Attempting to ***describe relationships*** or conduct ***causal inference*** 
 
 # Tidying Data
 
 > It is often said that 80% of data analysis is spent on the process of cleaning and preparing the data. (Dasu and Johnson, 2003)
 
-- Even before we conduct analysis or calculations, we need to put our data into the correct format. The goal here is to rearrange a messy dataset into one that is **tidy**
+Even before we conduct analysis or calculations, we need to put our data into the correct format. The goal here is to rearrange a messy dataset into one that is **tidy**
 
-- The two most important properties of tidy data are:
+The two most important properties of tidy data are:
+
 1) Each column is a variable.
 2) Each row is an observation.
 
-- Tidy data is easier to work with, because you have a consistent way of referring to variables (as column names) and observations (as row indices). It then becomes easy to manipulate, visualize, and model.
+Tidy data is easier to work with, because you have a consistent way of referring to variables (as column names) and observations (as row indices). It then becomes easy to manipulate, visualize, and model.
 
-> For more on the concept of *tidy* data, read Hadley Wickham's paper [here](http://vita.had.co.nz/papers/tidy-data.html)
+For more on the concept of *tidy* data, read Hadley Wickham's paper [here](http://vita.had.co.nz/papers/tidy-data.html)
 
 # Tidying Data/Wide vs. Long Formats
 
 > "Tidy datasets are all alike but every messy dataset is messy in its own way." – Hadley Wickham
 
-Tabular datasets can be arranged in many ways. For instance, consider the data below. Each data set displays information on heart rate observed in individuals across 3 different times. But each data frame organizes the values into a different layout. Which one of these do you think is the *tidy* format?
+Tabular datasets can be arranged in many ways. For instance, consider the data below. Each data set displays information on heart rate observed in individuals across 3 different time periods. But the data are organized differently in each table. Which one of these do you think is the *tidy* format?
 
 ```{r}
 wide <- data.frame(
@@ -84,104 +87,121 @@ long <- data.frame(
 long
 ```
 
+In the example above, the first dataframe (the "wide" one) would not be considered *tidy* because values (i.e., heartrate) are spread across multiple columns.
+
 We often refer to these different structurs as "long" vs. "wide" formats. In the "long" format, you usually have 1 column for the observed variable and the other columns are ID variables. 
 
-For the "wide" format each row is often a site/subject/patient and you have multiple observation variables containing the same type of data. These can be either repeated observations over time, or observation of multiple variables (or a mix of both). In the above case, we had the same kind of data (heartrate) entered across 3 different columns, corresponding to three different time periods.
+For the "wide" format each row is often a site/subject/patient and you have multiple observation variables containing the same type of data. These can be either repeated observations over time, or observation of multiple variables (or a mix of both). In the above case, we had the same kind of data (heart rate) entered across 3 different columns, corresponding to three different time periods.
 
-You may find data input may be simpler or some other applications may prefer the 'wide' format. However, many of R’s functions have been designed assuming you have 'long' format data. In the example above, the first dataframe (the "wide" one) would not be considered *tidy* because values (i.e., heartrate) are spread across multiple columns.
+![](img/tidyr-fig1.png)
+
+You may find data input may be simpler or some other applications may prefer the "wide" format. However, many of R’s functions have been designed assuming you have "long" format data. 
+
+# Tidying Data/tidyr
 
 Thankfully, the `tidyr` package will help you efficiently transform your data regardless of original format.
 
-
-# Reshaping Data/reshape2
-
-- Often times, even before we're interested in doing all this group-wise stuff, we need to reshape our data.  For instance, datasets often arrive at your desk in wide (long) form and you need to convert them to long (wide) form.
-
-- Though base R does have commands for reshaping data (including **aggregate**, **by**, **tapply**, etc.), each of their input commands are slightly different and are only suited for specific reshaping tasks.
-
-- The **reshape2** package overcomes these argument and task inconsistencies to provide a simple, relatively fast way to alter the form of a data.frame.  The package contains effectively two commands, and their functions are in their names: **melt** and **cast**
-
 ```{r}
-# Install the "reshape2" package (only necessary one time)
-# install.packages("reshape2") # Not Run
+# Install the "tidyr" package (only necessary one time)
+# install.packages("tidyr") # Not Run
 
 # Load the "reshape2" package (necessary every new R session)
-library(reshape2)
+library(tidyr)
 ```
 
-# Reshaping Data/reshape2/melt
+# Tidying Data/tidyr/gather
 
-- melt() is used to convert wide-form data to long-form.  The basic idea is to take your data.frame and melt it down to a minimal number of columns using two essential pieces of information:
-1) **Unit-of-Analysis identifiers**, or columns you *don't* want to melt down
-2) **Characteristic variables**, or columns you *do* want to melt down
+Until now, we’ve been using the nicely formatted original gapminder dataset, but 'real' data (i.e. our own research data) will never be so well organized. Here let's start with the wide format version of the gapminder dataset.
 
-```{r, eval=FALSE}
-# Basic Call
-melt(data=, id.vars=, measure.vars=, variable.name=, value.name=)
-```
-
-- often data come in wide format and we need it in long format; for example, regression and plotting functions often need long format input
-
-To see how this works in practice, suppose we wanted to convert this data from its current wide format to an entirely long format.  How to proceed?
-
-**First**, select which columns you want to keep (i.e. not melt).  In this case, we're interested in having individual tips as the unit of analysis.  Unfortunately, there is no column containing an individual identification number in this data, so we'll just add one as "id":
 ```{r}
-tips$id <- 1:nrow(tips)
-head(tips)
+gap_wide <- read.csv("../data/gapminder_wide.csv", stringsAsFactors = FALSE)
+str(gap_wide)
 ```
 
-**Second**, select which columns we want to melt.  In this case, we'd like to melt every column except "id".
+The first step towards getting our nice tidy data format is to first convert from the wide to the long format. 
 
-With these two pieces of information, we're ready to melt down the data.frame:
+The function `gather()` will 'gather' the observation variables into a single variable. This is sometimes called "melting" your data, because it melts the table from wide to long. 
+
 ```{r}
-tips.melted <- melt(data=tips, id.vars="id", 
-     measure.vars=c("total_bill", "tip", "sex", "smoker", "day", "time", "size", "tip.pct"))
-head(x = tips.melted)
-# If you want to melt ALL columns that aren't ID variables, you can also omit the "measure.vars" argument
-tips.melted <- melt(data=tips, id.vars="id")
-head(x = tips.melted)
+gap_long <- gap_wide %>%
+    gather(obstype_year, obs_values, 3:38)
+str(gap_long)
 ```
 
-Note that melt collapses all of the measure variables into two columns: one containing the column/measurement name, the other containing the column/measurement value for that row.  By default, these columns are named "variable" and "value", though they can be customized using the "variable.name" and "value.name" arguments.  For example:
+Notice that we put 3 arguments into the `gather()` function: 
+
+1) the name the new column for the new ID variable (`obstype_year`), 
+2) the name for the new amalgamated observation variable (`obs_value`), 
+3) the indices of the old observation variables (`3:38`, signalling columns 3 through 38) that we want to gather into one variable. Notice that we don't want to melt down columns 1 and 2, as these are considered "ID" variables.
+
+We can also select observation variables using:
+
+* variable indices
+* variable names (without quotes)
+* `x:z` to select all variables between x and z
+* `-y` to *exclude* y
+* `starts_with(x, ignore.case = TRUE)`: all names that starts with `x`
+* `ends_with(x, ignore.case = TRUE)`: all names that ends with `x`
+* `contains(x, ignore.case = TRUE)`: all names that contain `x`
+
+See the `select()` function in `dplyr` for more options.
+
+For instance, here we do the same thing with (1) the `starts_with` function, and (2) the `-` operator:
+
 ```{r}
-tips.melted <- melt(data=tips, id.vars="id", 
-     measure.vars=c("total_bill", "tip", "sex", "smoker", "day", "time", "size", "tip.pct"),
-     variable.name="characteristic",
-     value.name="response")
-head(x = tips.melted)
+# with the starts_with() function
+gap_long <- gap_wide %>%
+    gather(obstype_year, obs_values, starts_with('pop'),
+           starts_with('lifeExp'), starts_with('gdpPercap'))
+str(gap_long)
+
+# with the - operator
+gap_long <- gap_wide %>% 
+  gather(obstype_year,obs_values,-continent,-country)
+str(gap_long)
 ```
 
-Note also that one need not melt down all columns that aren't serving as ID columns.  The melted data.frame will only contain the values of the measure variables you select.  For instance:
+However you choose to do it, notice that the output collapses all of the measure variables into two columns: one containing new ID variable, the other containing the observation value for that row. 
+
+# Tidying Data/tidyr/separate
+
+You'll notice that in our long dataset, `obstype_year` actually contains 2 pieces of information, the observation type (`pop`, `lifeExp`, or `gdpPercap`) and the year.
+
+We can use the `separate()` function to split the character strings into multiple variables:
+
 ```{r}
-tips.melted <- melt(data=tips, id.vars="id", 
-     measure.vars=c("sex", "day"))
-head(x = tips.melted)
+gap_long_sep <- gap_long %>% 
+  separate(obstype_year, into=c('obs_type','year'), sep="_")
+gap_long_sep$year <- as.integer(gap_long_sep$year)
 ```
 
-# Reshaping Data/reshape2/cast
+# Tidying Data/tidyr/spread
 
-- There are two main cast functions in the reshape2 package for converting data from a long format to a wide format: **a**cast() (for producing **a**rrays) and **d**cast() (for producing **d**ata frames)
+The opposite of `gather()` is `spread()`. It spreads our observation variables back out to make a wider table We can use this function to spread our `gap_long()` to the original format.
 
-- The generic call for (d)cast looks like this:
-
-```{r eval=FALSE}
-dcast(data=, formula=xvar1+xvar2 ~ yvar1+yvar2, value.var=, fun.aggregate=)
-```
-
-Some example usages:
 ```{r}
-# Original data
-head(x = tips)
-# Cast a data.frame containing the individual column and columns containing the expansion of "age9" on the basis of its unique values
-tips.cast <- dcast(data=tips, formula=id~sex, value.var="tip.pct")
-head(x = tips.cast)
-# Previously melted data
-tips.melted <- melt(data = tips, id.vars = "id")
-head(x = tips.melted)
-# Cast a new data.frame from melted data.frame containing the individual column and expanding the "variable" column
-tips.cast <- dcast(data=tips.melted, formula=id~variable, value.var="value")
-head(x = tips.cast)
+gap_wide <- gap_long_sep %>% 
+  spread(obs_type,obs_values)
+str(gap_wide)
 ```
+
+All we need is some quick fixes to make this dataset identical to the original `gapminder` dataset:
+
+```{r}
+gapminder <- read.csv("../data/gapminder-FiveYearData.csv")
+head(gap_wide)
+head(gapminder)
+
+# rearrange columns
+gap_wide <- gap_wide[,names(gapminder)]
+head(gap_wide)
+
+# arrange by country, continent, and year
+gap_wide <- gap_wide %>% 
+  arrange(country,continent,year)
+head(gap_wide)
+```
+
 # Group-wise Operations/example dataset
 
 - The "tips" dataset was originally constructed by a waiter who recorded information about the tips he received over a period of several months
