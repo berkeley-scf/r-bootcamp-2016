@@ -47,6 +47,52 @@ a) ***Tidying*** data into the appropriate format
 b) Carrying out operations and calculations across ***groups***
 c) Attempting to ***describe relationships*** or conduct ***causal inference*** 
 
+# Tidying Data
+
+> It is often said that 80% of data analysis is spent on the process of cleaning and preparing the data. (Dasu and Johnson, 2003)
+
+- Even before we conduct analysis or calculations, we need to put our data into the correct format. The goal here is to rearrange a messy dataset into one that is **tidy**
+
+- The two most important properties of tidy data are:
+1) Each column is a variable.
+2) Each row is an observation.
+
+- Tidy data is easier to work with, because you have a consistent way of referring to variables (as column names) and observations (as row indices). It then becomes easy to manipulate, visualize, and model.
+
+> For more on the concept of *tidy* data, read Hadley Wickham's paper [here](http://vita.had.co.nz/papers/tidy-data.html)
+
+# Tidying Data/Wide vs. Long Formats
+
+> "Tidy datasets are all alike but every messy dataset is messy in its own way." – Hadley Wickham
+
+Tabular datasets can be arranged in many ways. For instance, consider the data below. Each data set displays information on heart rate observed in individuals across 3 different times. But each data frame organizes the values into a different layout. Which one of these do you think is the *tidy* format?
+
+```{r}
+wide <- data.frame(
+  name = c("Wilbur", "Petunia", "Gregory"),
+  time1 = c(67, 80, 64),
+  time2 = c(56, 90, 50),
+  time3 = c(70, 67, 101)
+)
+wide
+
+long <- data.frame(
+  name = c("Wilbur", "Petunia", "Gregory", "Wilbur", "Petunia", "Gregory", "Wilbur", "Petunia", "Gregory"),
+  time = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
+  heartrate = c(67, 80, 64, 56, 90, 50, 70, 67, 10)
+)
+long
+```
+
+We often refer to these different structurs as "long" vs. "wide" formats. In the "long" format, you usually have 1 column for the observed variable and the other columns are ID variables. 
+
+For the "wide" format each row is often a site/subject/patient and you have multiple observation variables containing the same type of data. These can be either repeated observations over time, or observation of multiple variables (or a mix of both). In the above case, we had the same kind of data (heartrate) entered across 3 different columns, corresponding to three different time periods.
+
+You may find data input may be simpler or some other applications may prefer the 'wide' format. However, many of R’s functions have been designed assuming you have 'long' format data. In the example above, the first dataframe (the "wide" one) would not be considered *tidy* because values (i.e., heartrate) are spread across multiple columns.
+
+Thankfully, the `tidyr` package will help you efficiently transform your data regardless of original format.
+
+
 # Reshaping Data/reshape2
 
 - Often times, even before we're interested in doing all this group-wise stuff, we need to reshape our data.  For instance, datasets often arrive at your desk in wide (long) form and you need to convert them to long (wide) form.
