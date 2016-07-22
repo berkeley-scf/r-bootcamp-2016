@@ -45,290 +45,99 @@ system.time(expr = solve(a=big.matrix)) # Compute time required to invert "big.m
 
 For most applied researchers, "useful stuff" that can be done in R boils down to a few core items: 
 
-1) Carrying out operations and calculations across ***groups***
+1) **Manipulating** data frames, e.g. filtering, summarizing, and conducting calculations across groups.
 2) ***Tidying*** data into the appropriate format
 3) Attempting to ***describe relationships*** or conduct ***causal inference*** 
 
-# Group-wise Operations/example dataset
+# Dataframe Manipulation/Example Dataset
 
-- The "tips" dataset was originally constructed by a waiter who recorded information about the tips he received over a period of several months
+So far, you’ve seen the basics of manipulating data.frames; now, let’s use those skills to digest a more realistic dataset. Lets read in the gapminder dataset that we downloaded previously:
 
-- The dataset can be found in the *reshape2* package and originally appeared in:
-
-Bryant, P. G. and Smith, M (1995), *Practical Data Analysis: Case Studies in Business Statistics.* Homewood, IL: Richard D. Irwin Publishing
+For this unit, we'll be working with the "Gapminder" dataset, which is excerpt of the data available at Gapminder.org. For each of 142 countries, the data  provides values for life expectancy, GDP per capita, and population, every five years, from 1952 to 2007.
 
 ```{r}
-library(reshape2)
-data("tips", package = "reshape2")
-# Get the object class
-class(x = tips)
-# Get the object dimensionality 
-dim(x = tips) # Note this is rows by columns
-# Get the column names
-colnames(x = tips)
-# View first six rows and all columns
-head(x = tips)
-# Get detailed column-by-column information
-str(object = tips)
+gapminder <- read.csv("../data/gapminder-FiveYearData.csv", stringsAsFactors = T)
+str(gapminder)
 ```
 
-# Group-wise Operations/Common Calculations
-
-- A good place to start with our data is to calculate summary statistics
-
-- Some notes on computing summary statistics:
-1) Note that these functions are sensitive to missing values (NA); you should be sure to specify na.rm=T to avoid errors 
+So far, you’ve seen the basics of manipulating data frames, e.g. subsetting, merging, and basic calculations. For instance, we can use base R functions to calculate summary statistics across groups of observaitons:
 
 ```{r}
-# Sample 100 times from the standard normal distribution 
-sample.data <- rnorm(n=100, mean=0, sd=1)
-
-# Attempt to calculate the sample mean (absence of NAs)
-mean(x = sample.data)
-
-# Add some missing values to the sample
-sample.data[c(1,4,16,64)] <- NA
-
-# Attempt to calculate the sample mean (presence of NAs)
-mean(x = sample.data) # Action for NAs is not specified
-mean(x = sample.data, na.rm = TRUE) # Action for NAs is not specified
+mean(gapminder[gapminder$continent == "Africa", "gdpPercap"])
+mean(gapminder[gapminder$continent == "Americas", "gdpPercap"])
+mean(gapminder[gapminder$continent == "Asia", "gdpPercap"])
 ```
 
-2) These functions are also sensitive to the presence of factor variables; remove the factor levels to avoid errors (usually use one of as.vector(), as.character(), or as.numeric())
+But this isn't very *nice* because there is a fair bit of repetition. Repeating yourself will cost you time, both now and later, and potentially introduce some nasty bugs.
+
+# Dataframe Manipulation/dplyr
+
+Luckily, the [`dplyr`](https://cran.r-project.org/web/packages/dplyr/dplyr.pdf) package provides a number of very useful functions for manipulating dataframes in a way that will reduce the above repetition, reduce the probability of making errors, and probably even save you some typing. As an added bonus, you might even find the `dplyr` grammar easier to read.
+
+Here we're going to cover 6 of the most commonly used functions as well as using pipes (`%>%`) to combine them.
+
+1. `select()`
+2. `filter()`
+3. `group_by()`
+4. `summarize()`
+5. `mutate()`
+
+If you have have not installed this package earlier, please do so:
+
+```{r,eval=FALSE}
+install.packages('dplyr')
+```
+
+Now let's load the package:
+
+```{r,message=FALSE}
+library(dplyr)
+```
+
+# Dataframe Manipulation/dplyr/select
+
+Say, for example, we wanted to move forward with only a few of the variables in our dataframe we could use the `select()` function. This will keep only the variables you select.
 
 ```{r}
-# Get a random sample of zeroes and ones 
-sample.data <- sample(x = c(0,1), size = 100, replace = T)
-
-# Add factor levels to the sample
-sample.data <- factor(x = sample.data)
-
-# Attempt to calculate the sample mean (with factor levels)
-mean(x = sample.data)
-
-# Remove factor levels
-sample.data <- as.numeric(x = sample.data)
-
-# Check that there are no more factor levels in the sample data
-is.factor(x=sample.data)
-
-# Attempt to calculate the sample mean (without factor levels)
-mean(x=sample.data, na.rm = T)
+year_country_gdp <- select(gapminder,year,country,gdpPercap)
 ```
 
-- Computing some typical summary statistics:
-```{r}
-# Mean
-mean(x=tips$tip, na.rm=T)
-# Median
-median(x=tips$tip, na.rm=T)
-# Standard Deviation
-sd(x=tips$tip, na.rm=T)
-# Quartiles
-quantile(x=tips$tip, na.rm=T, probs=seq(from=0, to=1, by=0.25))
-# Quintiles
-quantile(x=tips$tip, na.rm=T, probs=seq(from=0, to=1, by=0.2))
-# Deciles
-quantile(x=tips$tip, na.rm=T, probs=seq(from=0, to=1, by=0.1))
-# Percentiles
-quantile(x=tips$tip, na.rm=T, probs=seq(from=0, to=1, by=0.01))
-```
+![](../fig/13-dplyr-fig1.png)
 
-- We could do the same thing for lots of variables, but there is an easier way!
-```{r}
-# Compute standard summary statistics for object "red.blue"
-summary(object=tips)
-```
-
-- Unfortunately, the built-in summary methods don't always pickup every statistic of interest (for example, certain frequencies)
-- For this, the table function is very helpful
-```{r}
-# Isolate the gender column
-gender <- tips$sex
-
-# Get a vector of counts for unique values, divide by total count
-table(gender)
-table(gender)/length(gender)
-table(gender)/length(gender)*100
-
-# Isolate the gender and smoker columns
-gender.smoker <- tips[,c("sex", "smoker")]
-
-# Get a vector of counts for unique values, divide by total count
-table(gender.smoker)
-table(gender.smoker)/nrow(gender.smoker)
-table(gender.smoker)/nrow(gender.smoker)*100
-```
-
-- But it isn't always the case that a) R has a built-in method suting our needs, or b) the number of groups is small and the operations very simple.  Things can get really complicated really quickly.
-
-- How to tackle these tabulations?
-
-# Group-wise Operations
-
-All techniques for this problem rely on the ***split-apply-combine*** strategy
-
-**First,** take the data (or some object) and *split* it into smaller datasets on the basis of some variable
-
-Dataset A
-
-x|y|z
------|------|-----
-1|1|1
-2|2|1
-3|3|1
-4|1|2
-5|2|2
-6|3|2
-
-Datasets B and C (Dataset A split according to "z") 
-
-x|y|z| | | | | |x|y|z
------|------|-----|-----|-----|-----|-----|-----|-----|-----|-----
-1|1|1| | | | | |4|1|2
-2|2|1| | | | | |5|2|2
-3|3|1| || | | |6|3|2
-
-**Second,** apply some function to each one of the smaller datasets/objects 
-
-Example function: *mean* of variables "x" and "y"
-
-Datasets B' and C'
-
-mean(x)|mean(y)|z| | | | | |mean(x)|mean(y)|z
------|------|-----|-----|-----|-----|-----|-----|-----|-----|-----
-2|2|1| | | | | |5|2|2
-
-**Third,** combine the results into a larger dataset/object
-
-Datasets B' and C'
-
-mean(x)|mean(y)|z| | | | | |mean(x)|mean(y)|z
------|------|-----|-----|-----|-----|-----|-----|-----|-----|-----
-2|2|1| | | | | |5|2|2
-
-Dataset A'
-
-mean(x)|mean(y)|z
------|------|-----
-2|2|1
-5|2|2
-
-# Group-wise Operations/plyr
-
-- *plyr* is the go-to package for all your splitting-applying-combining needs
-- Among its many benefits (above base R capabilities):
-a) Don't have to worry about different name, argument, or output consistencies
-b) Can be parallelized 
-c) Input from, and output to, data frames, matricies, and lists
-d) Progress bars for lengthy computation
-e) Informative error messages
-
-- Note that *dplyr* is the next iteration of *plyr* that focuses on fast data frame manipulations. We won't cover it here, but recommend you take a look at it.
-
+If we open up `year_country_gdp` we'll see that it only contains the year, country and gdpPercap. This is equivalent to the base R subsetting function:
 
 ```{r}
-# Install the "plyr" package (only necessary one time)
-# install.packages("plyr") # Not Run
-
-# Load the "plyr" package (necessary every new R session)
-library(plyr)
+year_country_gdp <- gapminder[,c("year", "country", "gdpPercap")]
 ```
 
-# Group-wise Operations/plyr/selecting functions
+But, as we will see, `dplyr` makes for much more readible, efficient code because of its *pipe* operator.
 
-- Two essential questions:
-1) What is the class of your input object?
-2) What is the class of your desired output object?
-- If you want to split a **d**ata frame, and return results as a **d**ata frame, you use **dd**ply
-- If you want to split a **d**ata frame, and return results as a **l**ist, you use **dl**ply
-- If you want to split a **l**ist, and return results as a **d**ata frame, you use **ld**ply
+# Dataframe Manipulation/dplyr/pipes
 
-# Group-wise Operations/plyr/writing commands
-
-All of the major plyr functions have the same basic syntax
-
-```{r, eval=FALSE}
-xxply(.data=, .variables=, .fun=, ...)
-```
-
-Consider the case where we want to calculate tipping behavior across gender, smoking status, and day-of-the-week from a data.frame, then return them as a data.frame:
+Above we used 'normal' grammar, but the strengths of `dplyr` lie in combining several functions using pipes. Since the pipes grammar is unlike anything we've seen in R before, let's repeat what we've done above
+using pipes.
 
 ```{r}
-# Calculate tip amount as percent of total bill
-tips$tip.pct <- tips$tip/tips$total_bill*100
-
-# Using the appropriate plyr function (ddply), compute average tip percentages
-ddply(.data=tips, .variables=.(gender, smoker, day), .fun=summarize, mean.tip.pct=mean(x = tip.pct))
+year_country_gdp <- gapminder %>% select(year,country,gdpPercap)
 ```
 
-Consider the case where we want to calculate tipping behavior across gender, smoking status, and day-of-the-week from a data.frame, then return them as a list:
+To help you understand why we wrote that in that way, let's walk through it step by step. First we summon the gapminder dataframe and pass it on, using the pipe symbol `%>%`, to the next step, which is the `select()` function. In this case we don't specify which data object we use in the `select()` function since in gets that from the previous pipe. **Fun Fact**: There is a good chance you have encountered pipes before in the shell. In R, a pipe symbol is `%>%` while in the shell it is `|.` But the concept is the same!
+
+# Dataframe Manipulation/dplyr/filter
+
+If we now wanted to move forward with the above, but only with European countries, we can combine `select` and `filter`
 
 ```{r}
-dlply(.data=tips, .variables=.(gender, smoker, day), .fun=summarize, mean.tip.pct=mean(x = tip.pct))
+year_country_gdp_euro <- gapminder %>%
+    filter(continent=="Europe") %>%
+    select(year,country,gdpPercap)
 ```
+As with last time, first we pass the gapminder dataframe to the `filter()` function, then we pass the filtered version of the gapminder dataframe to the `select()` function.
 
-Consider the case where we want to calculate vote choice statistics across race from a list, and return them as a data.frame:
+To clarify, both the `select` and `filter` functions subsets the data frame. The difference is that `select` extracts certain columns, while `filter` extracts certain rows.
 
-```{r}
-# Split the data.frame into a list on the basis of gender, smoker status, and day-of-the-week
-tips.split <- split(x=tips, f = list(tips$sex, tips$smoker, tips$day))
-head(x = tips.split, n = 3)
+ **Note:** The order of operations is very important in this case. If we used 'select' first, filter would not be able to find the variable continent since we would have removed it in the previous step.
 
-# Compute summary statistics (note: no .variables argument)
-ldply(.data=tips.split, .fun=summarize, mean.tip.pct=mean(x = tip.pct))
-```
-
-Consider the case where we want to calculate vote choice statistics across race from a list, and return them as a list:
-
-```{r}
-llply(.data=tips.split, .fun=summarize, mean.tip.pct=mean(x = tip.pct))
-```
-
-# Group-wise Operations/plyr/functions
-
-- plyr can accomodate any user-defined function, but it also comes with some pre-defined functions that assist with the most common split-apply-combine tasks
-- We've already seen **summarize**, which creates user-specified vectors and combines them into a data.frame.  Here are some other helpful functions:
-
-**transform**: applies a function to a data.frame and adds new vectors (columns) to it
-
-```{r}
-# Add a column containing the average tip of the gender of the individual on that day
-tips.transformed <- ddply(.data=tips, .variables=.(sex, day), .fun=transform, sex.day.avg=mean(x=tip.pct))
-head(x = tips.transformed, n = 15)
-```
-
-Note that **transform** can't do transformations that involve the results of *other* transformations from the same call
-
-```{r}
-# Attempt to add new columns that draw on other (but still new) columns
-tips.transformed <- ddply(.data=tips, .variables=.(sex, day), .fun=transform, 
-                        sex.day.avg=mean(x=tip.pct),
-                        sex.day.avg.deviation=tip.pct-sex.day.avg)
-```
-
-For this, we need **mutate**: just like transform, but it executes the commands iteratively so transformations can be carried out that rely on previous transformations from the same call
-
-```{r}
-# Attempt to add new columns that draw on other (but still new) columns
-tips.transformed <- ddply(.data=tips, .variables=.(sex, day), .fun=mutate, 
-                        sex.day.avg=mean(x=tip.pct),
-                        sex.day.avg.deviation=tip.pct-sex.day.avg)
-head(x = tips.transformed, n = 15)
-```
-
-Another very useful function is **arrange**, which orders a data frame on the basis of column contents
-
-```{r}
-# Compute average tips across gender, smoker status, and day of the week
-tips.summary <- ddply(.data=tips, .variables=.(gender, smoker, day), .fun=summarize, mean.tip.pct=mean(x = tip.pct))
-
-# Arrange summarized data from highest average tip to lowest average tip
-arrange(df = tips.summary, mean.tip.pct)
-
-# Arrange summarized data from lowest average tip to highest average tip
-arrange(df = tips.summary, desc(mean.tip.pct))
-```
 
 # Tidying Data
 
@@ -349,7 +158,7 @@ For more on the concept of *tidy* data, read Hadley Wickham's paper [here](http:
 
 > "Tidy datasets are all alike but every messy dataset is messy in its own way." – Hadley Wickham
 
-Tabular datasets can be arranged in many ways. For instance, consider the data below. Each data set displays information on heart rate observed in individuals across 3 different time periods. But the data are organized differently in each table. Which one of these do you think is the *tidy* format?
+Tabular datasets can be arranged in many ways. For instance, consider the data below. Each data set displays information on heart rate observed in individuals across 3 different time periods. But the data are organized differently in each table.
 
 ```{r}
 wide <- data.frame(
@@ -368,7 +177,9 @@ long <- data.frame(
 long
 ```
 
-In the example above, the first dataframe (the "wide" one) would not be considered *tidy* because values (i.e., heartrate) are spread across multiple columns.
+**Question**: Which one of these do you think is the *tidy* format?
+
+**Answer**: The first dataframe (the "wide" one) would not be considered *tidy* because values (i.e., heartrate) are spread across multiple columns.
 
 We often refer to these different structurs as "long" vs. "wide" formats. In the "long" format, you usually have 1 column for the observed variable and the other columns are ID variables. 
 
