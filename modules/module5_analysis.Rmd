@@ -448,12 +448,12 @@ glm(formula=y~x1+x2+x3+..., family=familyname(link="linkname"), data=)
 
 - There are a bunch of families and links to use (help(family) for a full list), but some essentials are **binomial(link = "logit")**, **gaussian(link = "identity")**, and **poisson(link = "log")**
 
-- Example: suppose we want to regress the tip percent on the total bill and the size of the party, as well as the gender and smoker status of the tipper.  The glm call would be something like this:
+- Example: suppose we want to regress the life expectency on the GDP per capita and the population, as well as the continent and year.  The glm call would be something like this:
 
 ```{r}
 # Regress tip percent on total bill and party size
-reg <- glm(formula=tip.pct~total_bill+size+sex+smoker, 
-                family=gaussian, data=tips)
+reg <- glm(formula = lifeExp ~ gdpPercap + pop + continent + year, 
+                family=gaussian, data=gapminder)
 ```
 
 - When we store this regression in an object, we get access to several items of interest
@@ -497,14 +497,14 @@ glm(formula=y~x1+x2+factor(x3), family=family(link="link"), data=)
 
 **x1:x2** interacts all terms in x1 with all terms in x2
 ```{r}
-summary(glm(formula=tip.pct~total_bill+size+sex:smoker, 
-                family=gaussian, data=tips))
+summary(glm(formula = lifeExp ~ gdpPercap + pop + continent:factor(year), 
+                family=gaussian, data=gapminder))
 ```
 
 **x1*x2** produces the cross of x1 and x2, or x1+x2+x1:x2
 ```{r}
-summary(glm(formula=tip.pct~total_bill+size+sex*smoker, 
-                family=gaussian, data=tips))
+summary(glm(formula = lifeExp ~ gdpPercap + pop + continent*factor(year), 
+                family=gaussian, data=gapminder))
 ```
 
 # Inferences/Regression Diagnostics
