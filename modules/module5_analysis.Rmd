@@ -422,6 +422,10 @@ gap_wide <- gap_wide %>%
 head(gap_wide)
 ```
 
+# Extra Resources
+
+`dplyr` and `tiyr` have many more functions to help you wrangle and manipulate your data. See the  [Data Wrangling Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) for more.
+
 # Describing Relationships & Causal Inference
 
 - Once we've carried out group-wise operations and perhaps reshaped it, we may also like to attempt describing the relationships in the data or conducting some causal inference
