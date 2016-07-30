@@ -53,7 +53,7 @@ For most applied researchers, "useful stuff" that can be done in R boils down to
 
 # Dataframe Manipulation/Example Dataset
 
-So far, you’ve seen the basics of manipulating data.frames; now, let’s use those skills to digest a more realistic dataset. Lets read in the gapminder dataset that we downloaded previously:
+So far, you’ve seen the basics of manipulating data.frames; now, let’s use those skills to digest a more realistic dataset. 
 
 For this unit, we'll be working with the "Gapminder" dataset, which is excerpt of the data available at Gapminder.org. For each of 142 countries, the data  provides values for life expectancy, GDP per capita, and population, every five years, from 1952 to 2007.
 
@@ -70,11 +70,11 @@ mean(gapminder[gapminder$continent == "Americas", "gdpPercap"])
 mean(gapminder[gapminder$continent == "Asia", "gdpPercap"])
 ```
 
-But this isn't very *nice* because there is a fair bit of repetition. Repeating yourself will cost you time, both now and later, and potentially introduce some nasty bugs.
+But this isn't ideal because it involves a fair bit of repetition. Repeating yourself will cost you time, both now and later, and potentially introduce some nasty bugs.
 
 # Dataframe Manipulation/dplyr
 
-Luckily, the [`dplyr`](https://cran.r-project.org/web/packages/dplyr/dplyr.pdf) package provides a number of very useful functions for manipulating dataframes in a way that will reduce the above repetition, reduce the probability of making errors, and probably even save you some typing. As an added bonus, you might even find the `dplyr` grammar easier to read.
+Luckily, the [`dplyr`](https://cran.r-project.org/web/packages/dplyr/dplyr.pdf) package provides a number of very useful functions for manipulating dataframes. These functions will save you time by reducing repetition. As an added bonus, you might even find the `dplyr` grammar easier to read.
 
 Here we're going to cover 6 of the most commonly used functions as well as using pipes (`%>%`) to combine them.
 
@@ -84,10 +84,11 @@ Here we're going to cover 6 of the most commonly used functions as well as using
 4. `summarize()`
 5. `mutate()`
 
-If you have have not installed this package earlier, please do so:
+If you have have not installed this package earlier, please do so now:
 
 ```{r,eval=FALSE}
-install.packages('dplyr')
+# not run
+# install.packages('dplyr')
 ```
 
 Now let's load the package:
@@ -98,15 +99,15 @@ library(dplyr)
 
 # Dataframe Manipulation/dplyr/select
 
-Say, for example, we wanted to move forward with only a few of the variables in our dataframe we could use the `select()` function. This will keep only the variables you select.
+Imagine that we just received the gapminder dataset, but are only interested in a few variables in it. We could use the `select()` function to keep only the variables we select.
 
 ```{r}
-year_country_gdp <- select(gapminder,year,country,gdpPercap)
+year_country_gdp <- select(gapminder, year, country, gdpPercap)
 ```
 
-![](../fig/13-dplyr-fig1.png)
+![](../img/dplyr-fig1.png)
 
-If we open up `year_country_gdp` we'll see that it only contains the year, country and gdpPercap. This is equivalent to the base R subsetting function:
+If we open up `year_country_gdp`, we'll see that it only contains the year, country and gdpPercap. This is equivalent to the base R subsetting function:
 
 ```{r}
 year_country_gdp <- gapminder[,c("year", "country", "gdpPercap")]
@@ -116,22 +117,21 @@ But, as we will see, `dplyr` makes for much more readible, efficient code becaus
 
 # Dataframe Manipulation/dplyr/pipes
 
-Above we used 'normal' grammar, but the strengths of `dplyr` lie in combining several functions using *pipes*. Since the pipes grammar is unlike anything we've seen in R before, let's repeat what we've done above
-using pipes.
+Above, we used what's called 'normal' grammar, but the strengths of `dplyr` lie in combining several functions using *pipes*. Since the pipes grammar is unlike anything we've seen in R before, let's repeat what we've done above using pipes.
 
 ```{r}
 year_country_gdp <- gapminder %>% select(year,country,gdpPercap)
 ```
 
-To help you understand why we wrote that in that way, let's walk through it step by step. First we summon the gapminder dataframe and pass it on, using the pipe symbol `%>%`, to the next step, which is the `select()` function. In this case we don't specify which data object we use in the `select()` function since in gets that from the previous pipe. **Fun Fact**: There is a good chance you have encountered pipes before in the shell. In R, a pipe symbol is `%>%` while in the shell it is `|.` But the concept is the same!
+Let's walk through it step by step. First we summon the gapminder dataframe and pass it on, using the pipe symbol `%>%`, to the next step, which is the `select()` function. In this case we don't specify which data object we use in the `select()` function since in gets that from the previous pipe. **Fun Fact**: There is a good chance you have encountered pipes before in the shell. In R, a pipe symbol is `%>%` while in the shell it is `|.` But the concept is the same!
 
 # Dataframe Manipulation/dplyr/filter
 
-If we now wanted to move forward with the above, but only with European countries, we can combine `select` and `filter`
+Now let's say we're only interested in African countries. We can combine `select` and `filter` to select only the observations where `continent` is `Africa`.
 
 ```{r}
 year_country_gdp_euro <- gapminder %>%
-    filter(continent=="Europe") %>%
+    filter(continent=="Africa") %>%
     select(year,country,gdpPercap)
 ```
 
@@ -139,11 +139,11 @@ As with last time, first we pass the gapminder dataframe to the `filter()` funct
 
 To clarify, both the `select` and `filter` functions subsets the data frame. The difference is that `select` extracts certain columns, while `filter` extracts certain rows.
 
- **Note:** The order of operations is very important in this case. If we used 'select' first, filter would not be able to find the variable continent since we would have removed it in the previous step.
+ **Note:** The order of operations is very important in this case. If we used 'select' first, filter would not be able to find the variable `continent` since we would have removed it in the previous step.
 
 # Dataframe Manipulation/dplyr/apply-split-combine
 
-A common task you'll encounter when working with data, is that you'll want to run calculations on different groups within the data.. For instance, what if we wanted to calculated the mean GDP per capita for each continent?
+A common task you'll encounter when working with data is that you'll want to run calculations on different groups within the data.. For instance, what if we wanted to calculated the mean GDP per capita for each continent?
 
 In base R, you would have to run the `mean()` function for each subset of data:
 
@@ -175,56 +175,56 @@ You can see how this can get pretty tedious, especially if we want to calculate 
 
 The abstract problem we're encountering here is know as "split-apply-combine":
 
-![Split apply combine](../fig/splitapply.png)
+![Split apply combine](../img/splitapply.png)
 
-We want to *split* our data into groups, in this case continents, *apply* some calculations on that group, then optionally *combine* the results together afterwards. Luckily, `dplyr` can help us with this problem. 
+We want to *split* our data into groups (in this case continents), *apply* some calculations on that group, then  *combine* the results together afterwards. Luckily, `dplyr` can help us with this problem. 
 
 ```{r}
-gapminder$mean.continent.GDP <- NULL # remove this column -- there's a better way!
+# remove this column -- there's a better way!
+gapminder$mean.continent.GDP <- NULL
 ```
 
 # Dataframe Manipulation/dplyr/group_by
 
-We've already seen how `filter()` can help us select observations that meet our criteria (in the above: `continent=="Europe"`). More helpful, however, is the `group_by()` function, which will essentially use every unique criteria that we could have used in filter.
+We've already seen how `filter()` can help us select observations that meet certain criteria (in the above: `continent=="Europe"`). More helpful, however, is the `group_by()` function, which will essentially use every unique criteria that we could have used in `filter()`.
 
 ```{r}
 str(gapminder)
-
 str(gapminder %>% group_by(continent))
 ```
-You will notice that the structure of the dataframe where we used `group_by()` (`grouped_df`) is not the same as the original `gapminder` (`data.frame`). A `grouped_df` can be thought of as a `list` where each item in the `list`is a `data.frame` which contains only the rows that correspond to the a particular value `continent` (at least in the example above).
+You will notice that the structure of the dataframe where we used `group_by()` (`grouped_df`) is not the same as the original `gapminder` (`data.frame`). A `grouped_df` can be thought of as a `list` where each item in the `list` is a `data.frame` which contains only the rows that correspond to the a particular value `continent` (at least in the example above).
 
-![](../fig/13-dplyr-fig2.png)
+![](../img/dplyr-fig2.png)
 
 # Dataframe Manipulation/dplyr/summarize
 
-The above was a bit uneventful because `group_by()` much more exciting in conjunction with `summarize()`. This will allow use to create new variable(s) by using functions that repeat for each of the continent-specific data frames. That is to say, using the `group_by()` function, we split our original dataframe into multiple pieces, then we can run functions (e.g. `mean()` or `sd()`) within `summarize()`.
+The above was a bit uneventful because `group_by()` is much more exciting in conjunction with the `summarize()` function. This will allow use to create new variable(s) by using functions that repeat for each of the continent-specific data frames. In other words, using the `group_by()` function, we split our original dataframe into multiple pieces, which we then use to run functions (e.g. `mean()` or `sd()`) within `summarize()`.
 
 ```{r}
 gdp_bycontinents <- gapminder %>%
     group_by(continent) %>%
-    summarize(mean_gdpPercap=mean(gdpPercap))
+    summarize(mean_gdpPercap = mean(gdpPercap))
 ```
 
-![](../fig/13-dplyr-fig3.png)
+![](../img/dplyr-fig3.png)
 
-That allowed us to calculate the mean gdpPercap for each continent, but it gets even better. The function `group_by()` allows us to group by multiple variables. Let's group by `year` and `continent`.
+That allowed us to calculate the mean gdpPercap for each continent. But it gets even better -- the function `group_by()` allows us to group by multiple variables. Let's group by `year` and `continent`.
 
 ```{r}
 gdp_bycontinents_byyear <- gapminder %>%
-    group_by(continent,year) %>%
-    summarize(mean_gdpPercap=mean(gdpPercap))
+    group_by(continent, year) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap))
 ```
 
 That is already quite powerful, but it gets even better! You're not limited to defining 1 new variable in `summarize()`.
 
 ```{r}
 gdp_pop_bycontinents_byyear <- gapminder %>%
-    group_by(continent,year) %>%
-    summarize(mean_gdpPercap=mean(gdpPercap),
-              sd_gdpPercap=sd(gdpPercap),
-              mean_pop=mean(pop),
-              sd_pop=sd(pop))
+    group_by(continent, year) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop))
 ```
 
 # Dataframe Manipulation/dplyr/mutate
@@ -232,26 +232,40 @@ gdp_pop_bycontinents_byyear <- gapminder %>%
 What if we wanted to add these values to our original data frame instead of creating a new object? For this, we can use the `mutate()` function, which is similar to `summarize()` except it creates new variables to the same dataframe that you pass into it.
 
 ```{r}
-gdp_pop_bycontinents_byyear <- gapminder %>%
-    group_by(continent,year) %>%
-    transform(mean_gdpPercap=mean(gdpPercap),
-              sd_gdpPercap=sd(gdpPercap),
-              mean_pop=mean(pop),
-              sd_pop=sd(pop))
+gapminder_with_extra_vars <- gapminder %>%
+    group_by(continent, year) %>%
+    mutate(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop)) %>%
 ```
 
 We can use also use `mutate()` to create new variables prior to (or even after) summarizing information.
 
 ```{r}
 gdp_pop_bycontinents_byyear <- gapminder %>%
-    mutate(gdp_billion=gdpPercap*pop/10^9) %>%
-    group_by(continent,year) %>%
-    summarize(mean_gdpPercap=mean(gdpPercap),
-              sd_gdpPercap=sd(gdpPercap),
-              mean_pop=mean(pop),
-              sd_pop=sd(pop),
-              mean_gdp_billion=mean(gdp_billion),
-              sd_gdp_billion=sd(gdp_billion))
+    mutate(gdp_billion = gdpPercap*pop/10^9) %>%
+    group_by(continent, year) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop),
+              mean_gdp_billion = mean(gdp_billion),
+              sd_gdp_billion = sd(gdp_billion))
+```
+
+# Dataframe Manipulation/dplyr/arrange
+
+As a last step, let's say we want to sort the rows in our data frame according to values in a certain column. We can use the `arrange()` function to do this. For instance, let's organize our rows by `year` (recent first), and then by `continent`. 
+
+```{r}
+gapminder_with_extra_vars <- gapminder %>%
+    group_by(continent, year) %>%
+    mutate(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop)) %>%
+    arrange(desc(year), continent)
 ```
 
 # Tidying Data
@@ -325,7 +339,7 @@ str(gap_wide)
 
 The first step towards getting our nice tidy data format is to first convert from the wide to the long format. 
 
-The function `gather()` will 'gather' the observation variables into a single variable. This is sometimes called "melting" your data, because it melts the table from wide to long. 
+The function `gather()` will 'gather' the observation variables into a single variable. This is sometimes called "melting" your data, because it melts the table from wide to long. Those data will be melted into two variables: one for the variable names, and the other for the variable values. 
 
 ```{r}
 gap_long <- gap_wide %>%
