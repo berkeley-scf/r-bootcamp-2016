@@ -83,6 +83,7 @@ Here we're going to cover 6 of the most commonly used functions as well as using
 3. `group_by()`
 4. `summarize()`
 5. `mutate()`
+6. `arrange()`
 
 If you have have not installed this package earlier, please do so now:
 
