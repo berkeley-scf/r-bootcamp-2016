@@ -351,9 +351,9 @@ str(gap_long)
 
 Notice that we put 3 arguments into the `gather()` function: 
 
-1) the name the new column for the new ID variable (`obstype_year`), 
-2) the name for the new amalgamated observation variable (`obs_value`), 
-3) the indices of the old observation variables (`3:38`, signalling columns 3 through 38) that we want to gather into one variable. Notice that we don't want to melt down columns 1 and 2, as these are considered "ID" variables.
+1. the name the new column for the new ID variable (`obstype_year`), 
+2. the name for the new amalgamated observation variable (`obs_value`), 
+3. the indices of the old observation variables (`3:38`, signalling columns 3 through 38) that we want to gather into one variable. Notice that we don't want to melt down columns 1 and 2, as these are considered "ID" variables.
 
 We can also select observation variables using:
 
@@ -432,8 +432,8 @@ head(gap_wide)
 - Once we've carried out group-wise operations and perhaps reshaped it, we may also like to attempt describing the relationships in the data or conducting some causal inference
 
 - This often requires doing the following:
-1) Estimating Regressions
-2) Carryingout Regression Diagnostics
+1. Estimating Regressions
+2. Carryingout Regression Diagnostics
 
 # Inference/Regression
 
@@ -540,25 +540,25 @@ coeftest(x=reg, vcov.=vcovHC)
 
 ### Basics
 
-1) Use plyr to create a data frame containing the median departure delay for each destination.
+1. Use plyr to create a data frame containing the median departure delay for each destination.
 
-2) Now do the 95th percentile of departure delay for each destination by month pair.
+2. Now do the 95th percentile of departure delay for each destination by month pair.
 
 ### Using the ideas
 
-3) Use plyr to add a column to the airline dataset that is the total number of flights to the destination of each flight.
+3. Use plyr to add a column to the airline dataset that is the total number of flights to the destination of each flight.
 
-4) Use plyr to add a column to the airline dataset that is the hour of the scheduled departure.
+4. Use plyr to add a column to the airline dataset that is the hour of the scheduled departure.
 
-5) Use reshape2 to take the result from question #2 and put it in wide format so that destinations are rows and months are columns. 
+5. Use reshape2 to take the result from question #2 and put it in wide format so that destinations are rows and months are columns. 
 
-6) Fit a logistic regression where the outcome is whether there is a departure delay of at least 30 minutes, based on month and day of week and hour of day (see #4). These should all be factor variables when used in the regression. Fit the model for Chicago (ORD) flights. Now fit aseparate model for San Diego (SAN) flights. 
+6. Fit a logistic regression where the outcome is whether there is a departure delay of at least 30 minutes, based on month and day of week and hour of day (see #4). These should all be factor variables when used in the regression. Fit the model for Chicago (ORD) flights. Now fit aseparate model for San Diego (SAN) flights. 
 
-7) Fit separate logistic regressions for a set of 5-10 destinations, including ORD and SAN, all in a single call to dlply.
+7. Fit separate logistic regressions for a set of 5-10 destinations, including ORD and SAN, all in a single call to dlply.
  
 ### Advanced
 
-8) How do you predict the probability of a departure delay of more than 30 minutes for a given set of covariate values? Consider the `predict.glm()` function and what its help page says. Or write code that converts from the model coefficients to the probability scale. Compare the predicted probability of a departure delay of more than 30 minutes for a Friday flight in a day in December to that for a Saturday flight in April, both at 2 pm. Finally, see if the predictions vary much depending on whether the predictions are based on city-specific model fits or a single model where the destination is a predictor?
+8. How do you predict the probability of a departure delay of more than 30 minutes for a given set of covariate values? Consider the `predict.glm()` function and what its help page says. Or write code that converts from the model coefficients to the probability scale. Compare the predicted probability of a departure delay of more than 30 minutes for a Friday flight in a day in December to that for a Saturday flight in April, both at 2 pm. Finally, see if the predictions vary much depending on whether the predictions are based on city-specific model fits or a single model where the destination is a predictor?
 
 
 
