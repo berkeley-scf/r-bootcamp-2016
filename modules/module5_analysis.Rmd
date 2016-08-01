@@ -48,9 +48,9 @@ system.time(expr = solve(a=big.matrix)) # Compute time required to invert "big.m
 
 For most applied researchers, "useful stuff" that can be done in R boils down to a few core items: 
 
-1) **Manipulating** data frames, e.g. filtering, summarizing, and conducting calculations across groups.
-2) ***Tidying*** data into the appropriate format
-3) Attempting to ***describe relationships*** or conduct ***causal inference*** 
+1. **Manipulating** data frames, e.g. filtering, summarizing, and conducting calculations across groups.
+2. ***Tidying*** data into the appropriate format
+3. Attempting to ***describe relationships*** or conduct ***causal inference*** 
 
 # Dataframe Manipulation/Example Dataset
 
