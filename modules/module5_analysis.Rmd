@@ -1,6 +1,7 @@
 % R Bootcamp, Module 5: Useful Stuff
 % August 2016, UC Berkeley
 % Rochelle Terman (rterman@gmail.com) and Chris Krogslund 
+% Credits: Some of these materials were adapted from [Software Carpentry](http://swcarpentry.github.io/r-novice-gapminder/)
 
 ```{r chunksetup, include=FALSE} 
 # include any code here you don't want to show up in the document,
