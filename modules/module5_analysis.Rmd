@@ -106,7 +106,7 @@ Imagine that we just received the gapminder dataset, but are only interested in 
 year_country_gdp <- select(gapminder, year, country, gdpPercap)
 ```
 
-![](../img/dplyr-fig1.png)
+![](img/dplyr-fig1.png)
 
 If we open up `year_country_gdp`, we'll see that it only contains the year, country and gdpPercap. This is equivalent to the base R subsetting function:
 
@@ -176,7 +176,7 @@ You can see how this can get pretty tedious, especially if we want to calculate 
 
 The abstract problem we're encountering here is know as "split-apply-combine":
 
-![Split apply combine](../img/splitapply.png)
+![Split apply combine](img/splitapply.png)
 
 We want to *split* our data into groups (in this case continents), *apply* some calculations on that group, then  *combine* the results together afterwards. Luckily, `dplyr` can help us with this problem. 
 
@@ -195,7 +195,7 @@ str(gapminder %>% group_by(continent))
 ```
 You will notice that the structure of the dataframe where we used `group_by()` (`grouped_df`) is not the same as the original `gapminder` (`data.frame`). A `grouped_df` can be thought of as a `list` where each item in the `list` is a `data.frame` which contains only the rows that correspond to the a particular value `continent` (at least in the example above).
 
-![](../img/dplyr-fig2.png)
+![](img/dplyr-fig2.png)
 
 # Dataframe Manipulation/dplyr/summarize
 
@@ -207,7 +207,7 @@ gdp_bycontinents <- gapminder %>%
     summarize(mean_gdpPercap = mean(gdpPercap))
 ```
 
-![](../img/dplyr-fig3.png)
+![](img/dplyr-fig3.png)
 
 That allowed us to calculate the mean gdpPercap for each continent. But it gets even better -- the function `group_by()` allows us to group by multiple variables. Let's group by `year` and `continent`.
 
