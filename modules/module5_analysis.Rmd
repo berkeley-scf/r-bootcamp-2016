@@ -6,8 +6,6 @@
 ```{r chunksetup, include=FALSE} 
 # include any code here you don't want to show up in the document,
 # e.g. package and dataset loading
-library(plyr)
-library(reshape2)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -48,7 +46,7 @@ system.time(expr = solve(a=big.matrix)) # Compute time required to invert "big.m
 
 For most applied researchers, "useful stuff" that can be done in R boils down to a few core items: 
 
-1. **Manipulating** data frames, e.g. filtering, summarizing, and conducting calculations across groups.
+1. ***Manipulating*** data frames, e.g. filtering, summarizing, and conducting calculations across groups.
 2. ***Tidying*** data into the appropriate format
 3. Attempting to ***describe relationships*** or conduct ***causal inference*** 
 
@@ -239,7 +237,7 @@ gapminder_with_extra_vars <- gapminder %>%
     mutate(mean_gdpPercap = mean(gdpPercap),
               sd_gdpPercap = sd(gdpPercap),
               mean_pop = mean(pop),
-              sd_pop = sd(pop)) %>%
+              sd_pop = sd(pop))
 ```
 
 We can use also use `mutate()` to create new variables prior to (or even after) summarizing information.
@@ -402,7 +400,7 @@ The opposite of `gather()` is `spread()`. It spreads our observation variables b
 
 ```{r}
 gap_wide <- gap_long_sep %>% 
-  spread(obs_type,obs_values)
+  spread(obs_type, obs_values)
 str(gap_wide)
 ```
 
@@ -538,29 +536,64 @@ coeftest(x=reg, vcov.=vcovHC)
 
 # Breakout and overnight homework
 
-### Basics
+### dplyr
 
-1. Use plyr to create a data frame containing the median departure delay for each destination.
+1. Use dplyr to create a data frame containing the median `lifeExp` for each continent
 
-2. Now do the 95th percentile of departure delay for each destination by month pair.
+```{r}
+gap_median_lifeExp <- gapminder %>%
+    group_by(continent) %>%
+    summarize(med_lifeExp = median(lifeExp))
+```
 
-### Using the ideas
+2. Use dplyr to add a column to the gapminder dataset that contains the total population of the continent of each observation. For example, if the first observation is Afghanistan, the new column would contain the population of Asia. 
 
-3. Use plyr to add a column to the airline dataset that is the total number of flights to the destination of each flight.
+```{r}
+gapminder_pop_continent <- gapminder %>%
+    group_by(continent) %>%
+    mutate(continent_pop = sum(pop))
+```
 
-4. Use plyr to add a column to the airline dataset that is the hour of the scheduled departure.
+3. Use dplyr to: add a column called `gdpPercap_diff` that contains the difference between the observation's `gdpPercap` and the mean `gdpPercap` of the continent in that year. Arrange the dataframe by the column you just created, in descending order (so that the relatively richest country/years are listed first)
 
-5. Use reshape2 to take the result from question #2 and put it in wide format so that destinations are rows and months are columns. 
+**hint**: You might have to `ungoup()` before you `arrange()`.
 
-6. Fit a logistic regression where the outcome is whether there is a departure delay of at least 30 minutes, based on month and day of week and hour of day (see #4). These should all be factor variables when used in the regression. Fit the model for Chicago (ORD) flights. Now fit aseparate model for San Diego (SAN) flights. 
+```{r}
+gap_rel_gdp <- gapminder %>%
+    group_by(continent, year) %>%
+    mutate(gdpPercap_diff = gdpPercap - mean(gdpPercap)) %>%
+    ungroup() %>%
+    arrange(desc(gdpPercap_diff))
+```
 
-7. Fit separate logistic regressions for a set of 5-10 destinations, including ORD and SAN, all in a single call to dlply.
- 
-### Advanced
+### tidyr
 
-8. How do you predict the probability of a departure delay of more than 30 minutes for a given set of covariate values? Consider the `predict.glm()` function and what its help page says. Or write code that converts from the model coefficients to the probability scale. Compare the predicted probability of a departure delay of more than 30 minutes for a Friday flight in a day in December to that for a Saturday flight in April, both at 2 pm. Finally, see if the predictions vary much depending on whether the predictions are based on city-specific model fits or a single model where the destination is a predictor?
+4. Subset the results from question #3 to select only the `country`, `year`, and `gdpPercap_diff` columns. Use tidyr put it in wide format so that countries are rows and years are columns. 
 
+```{r}
+gap_wide <- gap_rel_gdp %>% 
+  select(country, year, gdpPercap_diff) %>% 
+  spread(year, gdpPercap_diff)
+```
 
+### regressions
 
+5. Fit two linear regression models from the gapminder data, where the outcome is `gdpPercap` and the explanatory variables are `pop`, `lifeExp`, and `year`. In one model, treat `year` as a numeric variable. In the other, factorize the `year` variable. How do you interpret each model?
 
+```{r}
+reg1 <- glm(formula = gdpPercap ~ lifeExp + pop + year, 
+                family=gaussian, data=gapminder)
+
+reg2 <- glm(formula = gdpPercap ~ lifeExp + pop + factor(year), 
+                family=gaussian, data=gapminder)
+```
+
+6. Fix a logit model where the outcome is whether `gdpPercap_diff` is positive or negative -- that is, whether an observation is in the upper half or lower half of the continent's wealth in a given year. The explanatory variables should be `country`, `lifeExp`, and `pop`. 
+
+```{r}
+gap_rel_gdp$sign <- 0
+gap_rel_gdp$sign[gap_rel_gdp$gdpPercap_diff>0] <- 1
+reg_logit <- glm(formula = sign ~ lifeExp + pop + country, 
+                family=binomial(link = "logit"), data=gap_rel_gdp)
+```
 
