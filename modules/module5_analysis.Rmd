@@ -1,21 +1,24 @@
 % R Bootcamp, Module 5: Useful Stuff
-% August 2015, UC Berkeley
-% Chris Krogslund (ckrogslund@berkeley.edu)
+% August 2016, UC Berkeley
+% Rochelle Terman (rterman@gmail.com) and Chris Krogslund 
+% Credits: Some of these materials were adapted from [Software Carpentry](http://swcarpentry.github.io/r-novice-gapminder/)
 
 ```{r chunksetup, include=FALSE} 
 # include any code here you don't want to show up in the document,
 # e.g. package and dataset loading
-library(plyr)
-library(reshape2)
+library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(lmtest)
 library(sandwich)
-if(!('modules' %in% unlist(strsplit(getwd(), split = '/')))) setwd('modules')
+#if(!('modules' %in% unlist(strsplit(getwd(), split = '/')))) setwd('modules')
+setwd("~/Dropbox/berkeley/Git-Repos/r-bootcamp-2016/modules")
 ```
 
 # What exactly is "useful stuff" in R?
 
-- For some, it might just be basic calculations
+For some, it might just be basic calculations
+
 ```{r}
 63.24 * pi # Multiply 63.24 by pi
 exp(x = 4.39) # Raise e to the power of 4.39
@@ -23,7 +26,8 @@ log(x = 1.7) # Take the log of 1.7
 tan(x = 58) # Compute the tangent of 58
 ```
 
-- For others, it might be large or complex mathematical operations
+For others, it might be large or complex mathematical operations
+
 ```{r}
 # Take one million samples from the standard normal distribution
 data.sample <- rnorm(n=1000000, mean=0, sd=1) 
@@ -38,390 +42,396 @@ system.time(expr = solve(a=big.matrix)) # Compute time required to invert "big.m
 
 # Useful Stuff: Applied Research Edition
 
-- For most applied researchers, "useful stuff" that can be done in R boils down to a few core items: 
+> It is often said that 80% of data analysis is spent on the process of cleaning and preparing the data. (Dasu and Johnson, 2003)
 
-a) Carrying out operations and calculations across ***groups*** 
-b) ***Reshaping*** data to and from various formats
-c) Attempting to ***describe relationships*** or conduct ***causal inference*** 
+For most applied researchers, "useful stuff" that can be done in R boils down to a few core items: 
 
-# Group-wise Operations/example dataset
+1. ***Manipulating*** data frames, e.g. filtering, summarizing, and conducting calculations across groups.
+2. ***Tidying*** data into the appropriate format
+3. Attempting to ***describe relationships*** or conduct ***causal inference*** 
 
-- The "tips" dataset was originally constructed by a waiter who recorded information about the tips he received over a period of several months
+# Dataframe Manipulation/Example Dataset
 
-- The dataset can be found in the *reshape2* package and originally appeared in:
+So far, you’ve seen the basics of manipulating data.frames; now, let’s use those skills to digest a more realistic dataset. 
 
-Bryant, P. G. and Smith, M (1995), *Practical Data Analysis: Case Studies in Business Statistics.* Homewood, IL: Richard D. Irwin Publishing
-
-```{r}
-library(reshape2)
-data("tips", package = "reshape2")
-# Get the object class
-class(x = tips)
-# Get the object dimensionality 
-dim(x = tips) # Note this is rows by columns
-# Get the column names
-colnames(x = tips)
-# View first six rows and all columns
-head(x = tips)
-# Get detailed column-by-column information
-str(object = tips)
-```
-
-# Group-wise Operations/Common Calculations
-
-- A good place to start with our data is to calculate summary statistics
-
-- Some notes on computing summary statistics:
-1) Note that these functions are sensitive to missing values (NA); you should be sure to specify na.rm=T to avoid errors 
+For this unit, we'll be working with the "Gapminder" dataset, which is excerpt of the data available at Gapminder.org. For each of 142 countries, the data  provides values for life expectancy, GDP per capita, and population, every five years, from 1952 to 2007.
 
 ```{r}
-# Sample 100 times from the standard normal distribution 
-sample.data <- rnorm(n=100, mean=0, sd=1)
-
-# Attempt to calculate the sample mean (absence of NAs)
-mean(x = sample.data)
-
-# Add some missing values to the sample
-sample.data[c(1,4,16,64)] <- NA
-
-# Attempt to calculate the sample mean (presence of NAs)
-mean(x = sample.data) # Action for NAs is not specified
-mean(x = sample.data, na.rm = TRUE) # Action for NAs is not specified
+gapminder <- read.csv("../data/gapminder-FiveYearData.csv", stringsAsFactors = T)
+str(gapminder)
 ```
 
-2) These functions are also sensitive to the presence of factor variables; remove the factor levels to avoid errors (usually use one of as.vector(), as.character(), or as.numeric())
+So far, you’ve seen the basics of manipulating data frames, e.g. subsetting, merging, and basic calculations. For instance, we can use base R functions to calculate summary statistics across groups of observaitons:
 
 ```{r}
-# Get a random sample of zeroes and ones 
-sample.data <- sample(x = c(0,1), size = 100, replace = T)
-
-# Add factor levels to the sample
-sample.data <- factor(x = sample.data)
-
-# Attempt to calculate the sample mean (with factor levels)
-mean(x = sample.data)
-
-# Remove factor levels
-sample.data <- as.numeric(x = sample.data)
-
-# Check that there are no more factor levels in the sample data
-is.factor(x=sample.data)
-
-# Attempt to calculate the sample mean (without factor levels)
-mean(x=sample.data, na.rm = T)
+mean(gapminder[gapminder$continent == "Africa", "gdpPercap"])
+mean(gapminder[gapminder$continent == "Americas", "gdpPercap"])
+mean(gapminder[gapminder$continent == "Asia", "gdpPercap"])
 ```
 
-- Computing some typical summary statistics:
-```{r}
-# Mean
-mean(x=tips$tip, na.rm=T)
-# Median
-median(x=tips$tip, na.rm=T)
-# Standard Deviation
-sd(x=tips$tip, na.rm=T)
-# Quartiles
-quantile(x=tips$tip, na.rm=T, probs=seq(from=0, to=1, by=0.25))
-# Quintiles
-quantile(x=tips$tip, na.rm=T, probs=seq(from=0, to=1, by=0.2))
-# Deciles
-quantile(x=tips$tip, na.rm=T, probs=seq(from=0, to=1, by=0.1))
-# Percentiles
-quantile(x=tips$tip, na.rm=T, probs=seq(from=0, to=1, by=0.01))
+But this isn't ideal because it involves a fair bit of repetition. Repeating yourself will cost you time, both now and later, and potentially introduce some nasty bugs.
+
+# Dataframe Manipulation/dplyr
+
+Luckily, the [`dplyr`](https://cran.r-project.org/web/packages/dplyr/dplyr.pdf) package provides a number of very useful functions for manipulating dataframes. These functions will save you time by reducing repetition. As an added bonus, you might even find the `dplyr` grammar easier to read.
+
+Here we're going to cover 6 of the most commonly used functions as well as using pipes (`%>%`) to combine them.
+
+1. `select()`
+2. `filter()`
+3. `group_by()`
+4. `summarize()`
+5. `mutate()`
+6. `arrange()`
+
+If you have have not installed this package earlier, please do so now:
+
+```{r,eval=FALSE}
+# not run
+# install.packages('dplyr')
 ```
 
-- We could do the same thing for lots of variables, but there is an easier way!
-```{r}
-# Compute standard summary statistics for object "red.blue"
-summary(object=tips)
+Now let's load the package:
+
+```{r,message=FALSE}
+library(dplyr)
 ```
 
-- Unfortunately, the built-in summary methods don't always pickup every statistic of interest (for example, certain frequencies)
-- For this, the table function is very helpful
-```{r}
-# Isolate the gender column
-gender <- tips$sex
+# Dataframe Manipulation/dplyr/select
 
-# Get a vector of counts for unique values, divide by total count
-table(gender)
-table(gender)/length(gender)
-table(gender)/length(gender)*100
-
-# Isolate the gender and smoker columns
-gender.smoker <- tips[,c("sex", "smoker")]
-
-# Get a vector of counts for unique values, divide by total count
-table(gender.smoker)
-table(gender.smoker)/nrow(gender.smoker)
-table(gender.smoker)/nrow(gender.smoker)*100
-```
-
-- But it isn't always the case that a) R has a built-in method suting our needs, or b) the number of groups is small and the operations very simple.  Things can get really complicated really quickly.
-
-- How to tackle these tabulations?
-
-# Group-wise Operations
-
-All techniques for this problem rely on the ***split-apply-combine*** strategy
-
-**First,** take the data (or some object) and *split* it into smaller datasets on the basis of some variable
-
-Dataset A
-
-x|y|z
------|------|-----
-1|1|1
-2|2|1
-3|3|1
-4|1|2
-5|2|2
-6|3|2
-
-Datasets B and C (Dataset A split according to "z") 
-
-x|y|z| | | | | |x|y|z
------|------|-----|-----|-----|-----|-----|-----|-----|-----|-----
-1|1|1| | | | | |4|1|2
-2|2|1| | | | | |5|2|2
-3|3|1| || | | |6|3|2
-
-**Second,** apply some function to each one of the smaller datasets/objects 
-
-Example function: *mean* of variables "x" and "y"
-
-Datasets B' and C'
-
-mean(x)|mean(y)|z| | | | | |mean(x)|mean(y)|z
------|------|-----|-----|-----|-----|-----|-----|-----|-----|-----
-2|2|1| | | | | |5|2|2
-
-**Third,** combine the results into a larger dataset/object
-
-Datasets B' and C'
-
-mean(x)|mean(y)|z| | | | | |mean(x)|mean(y)|z
------|------|-----|-----|-----|-----|-----|-----|-----|-----|-----
-2|2|1| | | | | |5|2|2
-
-Dataset A'
-
-mean(x)|mean(y)|z
------|------|-----
-2|2|1
-5|2|2
-
-# Group-wise Operations/plyr
-
-- *plyr* is the go-to package for all your splitting-applying-combining needs
-- Among its many benefits (above base R capabilities):
-a) Don't have to worry about different name, argument, or output consistencies
-b) Can be parallelized 
-c) Input from, and output to, data frames, matricies, and lists
-d) Progress bars for lengthy computation
-e) Informative error messages
-
-- Note that *dplyr* is the next iteration of *plyr* that focuses on fast data frame manipulations. We won't cover it here, but recommend you take a look at it.
-
+Imagine that we just received the gapminder dataset, but are only interested in a few variables in it. We could use the `select()` function to keep only the variables we select.
 
 ```{r}
-# Install the "plyr" package (only necessary one time)
-# install.packages("plyr") # Not Run
-
-# Load the "plyr" package (necessary every new R session)
-library(plyr)
+year_country_gdp <- select(gapminder, year, country, gdpPercap)
 ```
 
-# Group-wise Operations/plyr/selecting functions
+![](img/dplyr-fig1.png)
 
-- Two essential questions:
-1) What is the class of your input object?
-2) What is the class of your desired output object?
-- If you want to split a **d**ata frame, and return results as a **d**ata frame, you use **dd**ply
-- If you want to split a **d**ata frame, and return results as a **l**ist, you use **dl**ply
-- If you want to split a **l**ist, and return results as a **d**ata frame, you use **ld**ply
-
-# Group-wise Operations/plyr/writing commands
-
-All of the major plyr functions have the same basic syntax
-
-```{r, eval=FALSE}
-xxply(.data=, .variables=, .fun=, ...)
-```
-
-Consider the case where we want to calculate tipping behavior across gender, smoking status, and day-of-the-week from a data.frame, then return them as a data.frame:
+If we open up `year_country_gdp`, we'll see that it only contains the year, country and gdpPercap. This is equivalent to the base R subsetting function:
 
 ```{r}
-# Calculate tip amount as percent of total bill
-tips$tip.pct <- tips$tip/tips$total_bill*100
-
-# Using the appropriate plyr function (ddply), compute average tip percentages
-ddply(.data=tips, .variables=.(gender, smoker, day), .fun=summarize, mean.tip.pct=mean(x = tip.pct))
+year_country_gdp <- gapminder[,c("year", "country", "gdpPercap")]
 ```
 
-Consider the case where we want to calculate tipping behavior across gender, smoking status, and day-of-the-week from a data.frame, then return them as a list:
+But, as we will see, `dplyr` makes for much more readible, efficient code because of its *pipe* operator.
+
+# Dataframe Manipulation/dplyr/pipes
+
+Above, we used what's called 'normal' grammar, but the strengths of `dplyr` lie in combining several functions using *pipes*. Since the pipes grammar is unlike anything we've seen in R before, let's repeat what we've done above using pipes.
 
 ```{r}
-dlply(.data=tips, .variables=.(gender, smoker, day), .fun=summarize, mean.tip.pct=mean(x = tip.pct))
+year_country_gdp <- gapminder %>% select(year,country,gdpPercap)
 ```
 
-Consider the case where we want to calculate vote choice statistics across race from a list, and return them as a data.frame:
+Let's walk through it step by step. First we summon the gapminder dataframe and pass it on, using the pipe symbol `%>%`, to the next step, which is the `select()` function. In this case we don't specify which data object we use in the `select()` function since in gets that from the previous pipe. **Fun Fact**: There is a good chance you have encountered pipes before in the shell. In R, a pipe symbol is `%>%` while in the shell it is `|.` But the concept is the same!
+
+# Dataframe Manipulation/dplyr/filter
+
+Now let's say we're only interested in African countries. We can combine `select` and `filter` to select only the observations where `continent` is `Africa`.
 
 ```{r}
-# Split the data.frame into a list on the basis of gender, smoker status, and day-of-the-week
-tips.split <- split(x=tips, f = list(tips$sex, tips$smoker, tips$day))
-head(x = tips.split, n = 3)
-
-# Compute summary statistics (note: no .variables argument)
-ldply(.data=tips.split, .fun=summarize, mean.tip.pct=mean(x = tip.pct))
+year_country_gdp_euro <- gapminder %>%
+    filter(continent=="Africa") %>%
+    select(year,country,gdpPercap)
 ```
 
-Consider the case where we want to calculate vote choice statistics across race from a list, and return them as a list:
+As with last time, first we pass the gapminder dataframe to the `filter()` function, then we pass the filtered version of the gapminder dataframe to the `select()` function.
+
+To clarify, both the `select` and `filter` functions subsets the data frame. The difference is that `select` extracts certain columns, while `filter` extracts certain rows.
+
+ **Note:** The order of operations is very important in this case. If we used 'select' first, filter would not be able to find the variable `continent` since we would have removed it in the previous step.
+
+# Dataframe Manipulation/dplyr/apply-split-combine
+
+A common task you'll encounter when working with data is that you'll want to run calculations on different groups within the data.. For instance, what if we wanted to calculated the mean GDP per capita for each continent?
+
+In base R, you would have to run the `mean()` function for each subset of data:
 
 ```{r}
-llply(.data=tips.split, .fun=summarize, mean.tip.pct=mean(x = tip.pct))
+mean(gapminder$gdpPercap[gapminder$continent=="Africa"])
+mean(gapminder$gdpPercap[gapminder$continent=="Americas"])
+mean(gapminder$gdpPercap[gapminder$continent=="Asia"])
+mean(gapminder$gdpPercap[gapminder$continent=="Europe"])
+mean(gapminder$gdpPercap[gapminder$continent=="Oceania"])
 ```
 
-# Group-wise Operations/plyr/functions
-
-- plyr can accomodate any user-defined function, but it also comes with some pre-defined functions that assist with the most common split-apply-combine tasks
-- We've already seen **summarize**, which creates user-specified vectors and combines them into a data.frame.  Here are some other helpful functions:
-
-**transform**: applies a function to a data.frame and adds new vectors (columns) to it
+That's a lot of repetition! To make matters worse, what if we wanted to add these values to our original data frame as a new column? We would have to write something like this:
 
 ```{r}
-# Add a column containing the average tip of the gender of the individual on that day
-tips.transformed <- ddply(.data=tips, .variables=.(sex, day), .fun=transform, sex.day.avg=mean(x=tip.pct))
-head(x = tips.transformed, n = 15)
+gapminder$mean.continent.GDP <- NA
+
+gapminder$mean.continent.GDP[gapminder$continent=="Africa"] <- mean(gapminder$gdpPercap[gapminder$continent=="Africa"])
+
+gapminder$mean.continent.GDP[gapminder$continent=="Americas"] <- mean(gapminder$gdpPercap[gapminder$continent=="Americas"])
+
+gapminder$mean.continent.GDP[gapminder$continent=="Asia"] <- mean(gapminder$gdpPercap[gapminder$continent=="Asia"])
+
+gapminder$mean.continent.GDP[gapminder$continent=="Europe"] <- mean(gapminder$gdpPercap[gapminder$continent=="Europe"])
+
+gapminder$mean.continent.GDP[gapminder$continent=="Oceania"] <- mean(gapminder$gdpPercap[gapminder$continent=="Oceania"])
 ```
 
-Note that **transform** can't do transformations that involve the results of *other* transformations from the same call
+You can see how this can get pretty tedious, especially if we want to calculate more complicated or refined statistics. We could use loops or apply functions, but these can be difficult, slow, or error-prone. 
+
+The abstract problem we're encountering here is know as "split-apply-combine":
+
+![Split apply combine](img/splitapply.png)
+
+We want to *split* our data into groups (in this case continents), *apply* some calculations on that group, then  *combine* the results together afterwards. Luckily, `dplyr` can help us with this problem. 
 
 ```{r}
-# Attempt to add new columns that draw on other (but still new) columns
-tips.transformed <- ddply(.data=tips, .variables=.(sex, day), .fun=transform, 
-                        sex.day.avg=mean(x=tip.pct),
-                        sex.day.avg.deviation=tip.pct-sex.day.avg)
+# remove this column -- there's a better way!
+gapminder$mean.continent.GDP <- NULL
 ```
 
-For this, we need **mutate**: just like transform, but it executes the commands iteratively so transformations can be carried out that rely on previous transformations from the same call
+# Dataframe Manipulation/dplyr/group_by
+
+We've already seen how `filter()` can help us select observations that meet certain criteria (in the above: `continent=="Europe"`). More helpful, however, is the `group_by()` function, which will essentially use every unique criteria that we could have used in `filter()`.
 
 ```{r}
-# Attempt to add new columns that draw on other (but still new) columns
-tips.transformed <- ddply(.data=tips, .variables=.(sex, day), .fun=mutate, 
-                        sex.day.avg=mean(x=tip.pct),
-                        sex.day.avg.deviation=tip.pct-sex.day.avg)
-head(x = tips.transformed, n = 15)
+str(gapminder)
+str(gapminder %>% group_by(continent))
+```
+You will notice that the structure of the dataframe where we used `group_by()` (`grouped_df`) is not the same as the original `gapminder` (`data.frame`). A `grouped_df` can be thought of as a `list` where each item in the `list` is a `data.frame` which contains only the rows that correspond to the a particular value `continent` (at least in the example above).
+
+![](img/dplyr-fig2.png)
+
+# Dataframe Manipulation/dplyr/summarize
+
+The above was a bit uneventful because `group_by()` is much more exciting in conjunction with the `summarize()` function. This will allow use to create new variable(s) by using functions that repeat for each of the continent-specific data frames. In other words, using the `group_by()` function, we split our original dataframe into multiple pieces, which we then use to run functions (e.g. `mean()` or `sd()`) within `summarize()`.
+
+```{r}
+gdp_bycontinents <- gapminder %>%
+    group_by(continent) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap))
 ```
 
-Another very useful function is **arrange**, which orders a data frame on the basis of column contents
+![](img/dplyr-fig3.png)
+
+That allowed us to calculate the mean gdpPercap for each continent. But it gets even better -- the function `group_by()` allows us to group by multiple variables. Let's group by `year` and `continent`.
 
 ```{r}
-# Compute average tips across gender, smoker status, and day of the week
-tips.summary <- ddply(.data=tips, .variables=.(gender, smoker, day), .fun=summarize, mean.tip.pct=mean(x = tip.pct))
-
-# Arrange summarized data from highest average tip to lowest average tip
-arrange(df = tips.summary, mean.tip.pct)
-
-# Arrange summarized data from lowest average tip to highest average tip
-arrange(df = tips.summary, desc(mean.tip.pct))
+gdp_bycontinents_byyear <- gapminder %>%
+    group_by(continent, year) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap))
 ```
 
-# Reshaping Data/reshape2
-
-- Often times, even before we're interested in doing all this group-wise stuff, we need to reshape our data.  For instance, datasets often arrive at your desk in wide (long) form and you need to convert them to long (wide) form.
-
-- Though base R does have commands for reshaping data (including **aggregate**, **by**, **tapply**, etc.), each of their input commands are slightly different and are only suited for specific reshaping tasks.
-
-- The **reshape2** package overcomes these argument and task inconsistencies to provide a simple, relatively fast way to alter the form of a data.frame.  The package contains effectively two commands, and their functions are in their names: **melt** and **cast**
+That is already quite powerful, but it gets even better! You're not limited to defining 1 new variable in `summarize()`.
 
 ```{r}
-# Install the "reshape2" package (only necessary one time)
-# install.packages("reshape2") # Not Run
+gdp_pop_bycontinents_byyear <- gapminder %>%
+    group_by(continent, year) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop))
+```
+
+# Dataframe Manipulation/dplyr/mutate
+
+What if we wanted to add these values to our original data frame instead of creating a new object? For this, we can use the `mutate()` function, which is similar to `summarize()` except it creates new variables to the same dataframe that you pass into it.
+
+```{r}
+gapminder_with_extra_vars <- gapminder %>%
+    group_by(continent, year) %>%
+    mutate(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop))
+```
+
+We can use also use `mutate()` to create new variables prior to (or even after) summarizing information.
+
+```{r}
+gdp_pop_bycontinents_byyear <- gapminder %>%
+    mutate(gdp_billion = gdpPercap*pop/10^9) %>%
+    group_by(continent, year) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop),
+              mean_gdp_billion = mean(gdp_billion),
+              sd_gdp_billion = sd(gdp_billion))
+```
+
+# Dataframe Manipulation/dplyr/arrange
+
+As a last step, let's say we want to sort the rows in our data frame according to values in a certain column. We can use the `arrange()` function to do this. For instance, let's organize our rows by `year` (recent first), and then by `continent`. 
+
+```{r}
+gapminder_with_extra_vars <- gapminder %>%
+    group_by(continent, year) %>%
+    mutate(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop)) %>%
+    arrange(desc(year), continent)
+```
+
+# Tidying Data
+
+Even before we conduct analysis or calculations, we need to put our data into the correct format. The goal here is to rearrange a messy dataset into one that is **tidy**
+
+The two most important properties of tidy data are:
+
+1) Each column is a variable.
+2) Each row is an observation.
+
+Tidy data is easier to work with, because you have a consistent way of referring to variables (as column names) and observations (as row indices). It then becomes easy to manipulate, visualize, and model.
+
+For more on the concept of *tidy* data, read Hadley Wickham's paper [here](http://vita.had.co.nz/papers/tidy-data.html)
+
+# Tidying Data/Wide vs. Long Formats
+
+> "Tidy datasets are all alike but every messy dataset is messy in its own way." – Hadley Wickham
+
+Tabular datasets can be arranged in many ways. For instance, consider the data below. Each data set displays information on heart rate observed in individuals across 3 different time periods. But the data are organized differently in each table.
+
+```{r}
+wide <- data.frame(
+  name = c("Wilbur", "Petunia", "Gregory"),
+  time1 = c(67, 80, 64),
+  time2 = c(56, 90, 50),
+  time3 = c(70, 67, 101)
+)
+wide
+
+long <- data.frame(
+  name = c("Wilbur", "Petunia", "Gregory", "Wilbur", "Petunia", "Gregory", "Wilbur", "Petunia", "Gregory"),
+  time = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
+  heartrate = c(67, 80, 64, 56, 90, 50, 70, 67, 10)
+)
+long
+```
+
+**Question**: Which one of these do you think is the *tidy* format?
+
+**Answer**: The first dataframe (the "wide" one) would not be considered *tidy* because values (i.e., heartrate) are spread across multiple columns.
+
+We often refer to these different structurs as "long" vs. "wide" formats. In the "long" format, you usually have 1 column for the observed variable and the other columns are ID variables. 
+
+For the "wide" format each row is often a site/subject/patient and you have multiple observation variables containing the same type of data. These can be either repeated observations over time, or observation of multiple variables (or a mix of both). In the above case, we had the same kind of data (heart rate) entered across 3 different columns, corresponding to three different time periods.
+
+![](img/tidyr-fig1.png)
+
+You may find data input may be simpler or some other applications may prefer the "wide" format. However, many of R’s functions have been designed assuming you have "long" format data. 
+
+# Tidying Data/tidyr
+
+Thankfully, the `tidyr` package will help you efficiently transform your data regardless of original format.
+
+```{r}
+# Install the "tidyr" package (only necessary one time)
+# install.packages("tidyr") # Not Run
 
 # Load the "reshape2" package (necessary every new R session)
-library(reshape2)
+library(tidyr)
 ```
 
-# Reshaping Data/reshape2/melt
+# Tidying Data/tidyr/gather
 
-- melt() is used to convert wide-form data to long-form.  The basic idea is to take your data.frame and melt it down to a minimal number of columns using two essential pieces of information:
-1) **Unit-of-Analysis identifiers**, or columns you *don't* want to melt down
-2) **Characteristic variables**, or columns you *do* want to melt down
+Until now, we’ve been using the nicely formatted original gapminder dataset, but 'real' data (i.e. our own research data) will never be so well organized. Here let's start with the wide format version of the gapminder dataset.
 
-```{r, eval=FALSE}
-# Basic Call
-melt(data=, id.vars=, measure.vars=, variable.name=, value.name=)
-```
-
-- often data come in wide format and we need it in long format; for example, regression and plotting functions often need long format input
-
-To see how this works in practice, suppose we wanted to convert this data from its current wide format to an entirely long format.  How to proceed?
-
-**First**, select which columns you want to keep (i.e. not melt).  In this case, we're interested in having individual tips as the unit of analysis.  Unfortunately, there is no column containing an individual identification number in this data, so we'll just add one as "id":
 ```{r}
-tips$id <- 1:nrow(tips)
-head(tips)
+gap_wide <- read.csv("../data/gapminder_wide.csv", stringsAsFactors = FALSE)
+str(gap_wide)
 ```
 
-**Second**, select which columns we want to melt.  In this case, we'd like to melt every column except "id".
+The first step towards getting our nice tidy data format is to first convert from the wide to the long format. 
 
-With these two pieces of information, we're ready to melt down the data.frame:
+The function `gather()` will 'gather' the observation variables into a single variable. This is sometimes called "melting" your data, because it melts the table from wide to long. Those data will be melted into two variables: one for the variable names, and the other for the variable values. 
+
 ```{r}
-tips.melted <- melt(data=tips, id.vars="id", 
-     measure.vars=c("total_bill", "tip", "sex", "smoker", "day", "time", "size", "tip.pct"))
-head(x = tips.melted)
-# If you want to melt ALL columns that aren't ID variables, you can also omit the "measure.vars" argument
-tips.melted <- melt(data=tips, id.vars="id")
-head(x = tips.melted)
+gap_long <- gap_wide %>%
+    gather(obstype_year, obs_values, 3:38)
+str(gap_long)
 ```
 
-Note that melt collapses all of the measure variables into two columns: one containing the column/measurement name, the other containing the column/measurement value for that row.  By default, these columns are named "variable" and "value", though they can be customized using the "variable.name" and "value.name" arguments.  For example:
+Notice that we put 3 arguments into the `gather()` function: 
+
+1. the name the new column for the new ID variable (`obstype_year`), 
+2. the name for the new amalgamated observation variable (`obs_value`), 
+3. the indices of the old observation variables (`3:38`, signalling columns 3 through 38) that we want to gather into one variable. Notice that we don't want to melt down columns 1 and 2, as these are considered "ID" variables.
+
+We can also select observation variables using:
+
+* variable indices
+* variable names (without quotes)
+* `x:z` to select all variables between x and z
+* `-y` to *exclude* y
+* `starts_with(x, ignore.case = TRUE)`: all names that starts with `x`
+* `ends_with(x, ignore.case = TRUE)`: all names that ends with `x`
+* `contains(x, ignore.case = TRUE)`: all names that contain `x`
+
+See the `select()` function in `dplyr` for more options.
+
+For instance, here we do the same thing with (1) the `starts_with` function, and (2) the `-` operator:
+
 ```{r}
-tips.melted <- melt(data=tips, id.vars="id", 
-     measure.vars=c("total_bill", "tip", "sex", "smoker", "day", "time", "size", "tip.pct"),
-     variable.name="characteristic",
-     value.name="response")
-head(x = tips.melted)
+# with the starts_with() function
+gap_long <- gap_wide %>%
+    gather(obstype_year, obs_values, starts_with('pop'),
+           starts_with('lifeExp'), starts_with('gdpPercap'))
+str(gap_long)
+
+# with the - operator
+gap_long <- gap_wide %>% 
+  gather(obstype_year,obs_values,-continent,-country)
+str(gap_long)
 ```
 
-Note also that one need not melt down all columns that aren't serving as ID columns.  The melted data.frame will only contain the values of the measure variables you select.  For instance:
+However you choose to do it, notice that the output collapses all of the measure variables into two columns: one containing new ID variable, the other containing the observation value for that row. 
+
+# Tidying Data/tidyr/separate
+
+You'll notice that in our long dataset, `obstype_year` actually contains 2 pieces of information, the observation type (`pop`, `lifeExp`, or `gdpPercap`) and the year.
+
+We can use the `separate()` function to split the character strings into multiple variables:
+
 ```{r}
-tips.melted <- melt(data=tips, id.vars="id", 
-     measure.vars=c("sex", "day"))
-head(x = tips.melted)
+gap_long_sep <- gap_long %>% 
+  separate(obstype_year, into=c('obs_type','year'), sep="_")
+gap_long_sep$year <- as.integer(gap_long_sep$year)
 ```
 
-# Reshaping Data/reshape2/cast
+# Tidying Data/tidyr/spread
 
-- There are two main cast functions in the reshape2 package for converting data from a long format to a wide format: **a**cast() (for producing **a**rrays) and **d**cast() (for producing **d**ata frames)
+The opposite of `gather()` is `spread()`. It spreads our observation variables back out to make a wider table We can use this function to spread our `gap_long()` to the original format.
 
-- The generic call for (d)cast looks like this:
-
-```{r eval=FALSE}
-dcast(data=, formula=xvar1+xvar2 ~ yvar1+yvar2, value.var=, fun.aggregate=)
-```
-
-Some example usages:
 ```{r}
-# Original data
-head(x = tips)
-# Cast a data.frame containing the individual column and columns containing the expansion of "age9" on the basis of its unique values
-tips.cast <- dcast(data=tips, formula=id~sex, value.var="tip.pct")
-head(x = tips.cast)
-# Previously melted data
-tips.melted <- melt(data = tips, id.vars = "id")
-head(x = tips.melted)
-# Cast a new data.frame from melted data.frame containing the individual column and expanding the "variable" column
-tips.cast <- dcast(data=tips.melted, formula=id~variable, value.var="value")
-head(x = tips.cast)
+gap_wide <- gap_long_sep %>% 
+  spread(obs_type, obs_values)
+str(gap_wide)
 ```
+
+All we need is some quick fixes to make this dataset identical to the original `gapminder` dataset:
+
+```{r}
+gapminder <- read.csv("../data/gapminder-FiveYearData.csv")
+head(gap_wide)
+head(gapminder)
+
+# rearrange columns
+gap_wide <- gap_wide[,names(gapminder)]
+head(gap_wide)
+
+# arrange by country, continent, and year
+gap_wide <- gap_wide %>% 
+  arrange(country,continent,year)
+head(gap_wide)
+```
+
+# Extra Resources
+
+`dplyr` and `tiyr` have many more functions to help you wrangle and manipulate your data. See the  [Data Wrangling Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) for more.
 
 # Describing Relationships & Causal Inference
 
 - Once we've carried out group-wise operations and perhaps reshaped it, we may also like to attempt describing the relationships in the data or conducting some causal inference
 
 - This often requires doing the following:
-1) Estimating Regressions
-2) Carryingout Regression Diagnostics
+1. Estimating Regressions
+2. Carryingout Regression Diagnostics
 
 # Inference/Regression
 
@@ -441,12 +451,12 @@ glm(formula=y~x1+x2+x3+..., family=familyname(link="linkname"), data=)
 
 - There are a bunch of families and links to use (help(family) for a full list), but some essentials are **binomial(link = "logit")**, **gaussian(link = "identity")**, and **poisson(link = "log")**
 
-- Example: suppose we want to regress the tip percent on the total bill and the size of the party, as well as the gender and smoker status of the tipper.  The glm call would be something like this:
+- Example: suppose we want to regress the life expectency on the GDP per capita and the population, as well as the continent and year.  The glm call would be something like this:
 
 ```{r}
 # Regress tip percent on total bill and party size
-reg <- glm(formula=tip.pct~total_bill+size+sex+smoker, 
-                family=gaussian, data=tips)
+reg <- glm(formula = lifeExp ~ gdpPercap + pop + continent + year, 
+                family=gaussian, data=gapminder)
 ```
 
 - When we store this regression in an object, we get access to several items of interest
@@ -490,16 +500,15 @@ glm(formula=y~x1+x2+factor(x3), family=family(link="link"), data=)
 
 **x1:x2** interacts all terms in x1 with all terms in x2
 ```{r}
-summary(glm(formula=tip.pct~total_bill+size+sex:smoker, 
-                family=gaussian, data=tips))
+summary(glm(formula = lifeExp ~ gdpPercap + pop + continent:factor(year), 
+                family=gaussian, data=gapminder))
 ```
 
 **x1*x2** produces the cross of x1 and x2, or x1+x2+x1:x2
 ```{r}
-summary(glm(formula=tip.pct~total_bill+size+sex*smoker, 
-                family=gaussian, data=tips))
+summary(glm(formula = lifeExp ~ gdpPercap + pop + continent*factor(year), 
+                family=gaussian, data=gapminder))
 ```
-
 
 # Inferences/Regression Diagnostics
 
@@ -527,29 +536,64 @@ coeftest(x=reg, vcov.=vcovHC)
 
 # Breakout and overnight homework
 
-### Basics
+### dplyr
 
-1) Use plyr to create a data frame containing the median departure delay for each destination.
+1. Use dplyr to create a data frame containing the median `lifeExp` for each continent
 
-2) Now do the 95th percentile of departure delay for each destination by month pair.
+```{r}
+gap_median_lifeExp <- gapminder %>%
+    group_by(continent) %>%
+    summarize(med_lifeExp = median(lifeExp))
+```
 
-### Using the ideas
+2. Use dplyr to add a column to the gapminder dataset that contains the total population of the continent of each observation. For example, if the first observation is Afghanistan, the new column would contain the population of Asia. 
 
-3) Use plyr to add a column to the airline dataset that is the total number of flights to the destination of each flight.
+```{r}
+gapminder_pop_continent <- gapminder %>%
+    group_by(continent) %>%
+    mutate(continent_pop = sum(pop))
+```
 
-4) Use plyr to add a column to the airline dataset that is the hour of the scheduled departure.
+3. Use dplyr to: add a column called `gdpPercap_diff` that contains the difference between the observation's `gdpPercap` and the mean `gdpPercap` of the continent in that year. Arrange the dataframe by the column you just created, in descending order (so that the relatively richest country/years are listed first)
 
-5) Use reshape2 to take the result from question #2 and put it in wide format so that destinations are rows and months are columns. 
+**hint**: You might have to `ungoup()` before you `arrange()`.
 
-6) Fit a logistic regression where the outcome is whether there is a departure delay of at least 30 minutes, based on month and day of week and hour of day (see #4). These should all be factor variables when used in the regression. Fit the model for Chicago (ORD) flights. Now fit aseparate model for San Diego (SAN) flights. 
+```{r}
+gap_rel_gdp <- gapminder %>%
+    group_by(continent, year) %>%
+    mutate(gdpPercap_diff = gdpPercap - mean(gdpPercap)) %>%
+    ungroup() %>%
+    arrange(desc(gdpPercap_diff))
+```
 
-7) Fit separate logistic regressions for a set of 5-10 destinations, including ORD and SAN, all in a single call to dlply.
- 
-### Advanced
+### tidyr
 
-8) How do you predict the probability of a departure delay of more than 30 minutes for a given set of covariate values? Consider the `predict.glm()` function and what its help page says. Or write code that converts from the model coefficients to the probability scale. Compare the predicted probability of a departure delay of more than 30 minutes for a Friday flight in a day in December to that for a Saturday flight in April, both at 2 pm. Finally, see if the predictions vary much depending on whether the predictions are based on city-specific model fits or a single model where the destination is a predictor?
+4. Subset the results from question #3 to select only the `country`, `year`, and `gdpPercap_diff` columns. Use tidyr put it in wide format so that countries are rows and years are columns. 
 
+```{r}
+gap_wide <- gap_rel_gdp %>% 
+  select(country, year, gdpPercap_diff) %>% 
+  spread(year, gdpPercap_diff)
+```
 
+### regressions
 
+5. Fit two linear regression models from the gapminder data, where the outcome is `gdpPercap` and the explanatory variables are `pop`, `lifeExp`, and `year`. In one model, treat `year` as a numeric variable. In the other, factorize the `year` variable. How do you interpret each model?
 
+```{r}
+reg1 <- glm(formula = gdpPercap ~ lifeExp + pop + year, 
+                family=gaussian, data=gapminder)
+
+reg2 <- glm(formula = gdpPercap ~ lifeExp + pop + factor(year), 
+                family=gaussian, data=gapminder)
+```
+
+6. Fix a logit model where the outcome is whether `gdpPercap_diff` is positive or negative -- that is, whether an observation is in the upper half or lower half of the continent's wealth in a given year. The explanatory variables should be `country`, `lifeExp`, and `pop`. 
+
+```{r}
+gap_rel_gdp$sign <- 0
+gap_rel_gdp$sign[gap_rel_gdp$gdpPercap_diff>0] <- 1
+reg_logit <- glm(formula = sign ~ lifeExp + pop + country, 
+                family=binomial(link = "logit"), data=gap_rel_gdp)
+```
 
