@@ -1,6 +1,7 @@
 % R Bootcamp, Module 8: Graphics
 % August 2016, UC Berkeley
-% Chris Krogslund (ckrogslund@berkeley.edu)
+% Kellie Ottoboni (kellieotto@berkeley.edu)
+% Built off of material by Chris Krogslund
 
 % note to C. Paciorek: make of this is crashing in R 3.2.1 on smeagol but not R 3.2.0 on arwen
 
@@ -8,60 +9,91 @@
 # include any code here you don't want to show up in the document,
 # e.g. package and dataset loading
 library(plyr)
+library(dplyr)
+
+library(tidyr)
 library(reshape2)
 library(ggplot2)
 library(lattice)
 library(gridExtra)
 if(!('modules' %in% unlist(strsplit(getwd(), split = '/')))) setwd('modules')
 data <- read.csv("../data/cpds.csv")
+medals <- read.csv("../data/all_medalists.csv", header = TRUE, stringsAsFactors = FALSE)
+
 ```
 
 # By way of introduction...
 
 * 3 main facilities for producing graphics in R: **base**, **lattice**, and **ggplot2**
-  * In practice, these facilities are grouped into two camps: "basic" and "advanced"
+* In practice, these facilities are grouped into two camps: "basic" and "advanced"
 * A better formulation: quick/dirty v. involved/fancy
 
-# quick/dirty v. involved/fancy
+# The data
 
-* Recall that R is an object-oriented programming language
+* All Summer Olympic medalists from 1896-2008
+* Variables include name, gender, country, sporting event, and type of medal won
+
+For more info, see [The Guardian Datablog Olympic medal winners: every one since 1896 as open data](https://www.theguardian.com/sport/datablog/2012/jun/25/olympic-medal-winner-list-data)
 
 ```{r}
-tips <- reshape2::tips # Load dataset on tipping behavior included with reshape2 package
-attributes(tips) # Check attributes of the tips dataset (names, row.names, class)
-# Create an object of class "lm" (linear model), regressing tip on some covariates
-tips.reg <- lm(formula=tip~total_bill + sex + smoker + day + time + size, data=tips)
-attributes(tips.reg) # Check attributes of the tips.reg object (names, class)
+head(medals)
+
+# dplyr and tidyr refresher - we want to count the medals of each type, by country and by year
+medal_counts <- medals %>% group_by(Medal, Year, Country) %>% summarise(count = n())
+head(medal_counts)
+
+medal_counts_wide <- medal_counts %>% spread(key = Medal, value = count) %>%
+  ungroup() %>%
+  mutate(Bronze = ifelse(is.na(Bronze), 0, Bronze)) %>% 
+  mutate(Silver = ifelse(is.na(Silver), 0, Silver)) %>% 
+  mutate(Gold = ifelse(is.na(Gold), 0, Gold)) 
+head(medal_counts_wide)
+
+medal_lm <- lm(Gold ~ Bronze + Silver, data = medal_counts_wide)
+gold_medal_counts <- medal_counts %>% filter(Medal == "Gold")
+usa_gold_medals <- gold_medal_counts %>% 
+  filter(Country == "United States")
 ```
 
+# Base plot
+
+
+**TO DO**
+## Default plot
+
+```{r}
+plot(gold_medal_counts$Year, gold_medal_counts$count, main = "Gold Medal Counts")
+plot(usa_gold_medals$Year, usa_gold_medals$count, type = "l", main = "USA Gold Medals")
+```
+
+## Other plot types
+```{r}
+hist(gold_medal_counts$count)
+plot(density(gold_medal_counts$count))
+barplot(usa_gold_medals$count, width = 4, names.arg = usa_gold_medals$Year, main = "USA Gold Medals")
+mosaicplot(Year~Medal, medal_counts)
+
+boxplot(count~Country, medal_counts %>% filter(Country %in% c("United States", "Canada", "Mexico")))
+```
+
+## Object-oriented plots
 * Base graphics often recognizes the object type and will implement specific plot methods
-
-```{r, fig.cap=" "}
-plot(tips) # Calls plotting method for class of tips dataset ("data.frame")
-plot(tips.reg, which=1:2) # Calls plotting method for class of tips.reg objects ("lm"), print first two plots only
-```
-
 * lattice and ggplot2 generally **don't** exhibit this sort of behavior
+
 ```{r, fig.cap=" "}
-xyplot(tips) # Attempt in lattice to automatically plot objects of class "data.frame"
-ggplot(data=tips) + geom_point() # Attempt in ggplot to automatically plot objects of class "data.frame"
-xyplot(tips.reg) # Attempt in lattice to automatically plot objects of class "lm"
-ggplot(data=tips.reg) + geom_point() # Attempt in ggplot to automatically plot objects of class "lm"
+plot(medal_counts_wide %>% select(-Country)) # Calls plotting method for class of the dataset ("data.frame")
+plot(medal_lm, which=1:2) # Calls plotting method for class of medal_lm object ("lm"), print first two plots only
 ```
 
-* Easiest to cover **lattice** and **ggplot2** in tandem 
 
-# The Dataset
+## Pros/cons
+* Good for exploratory data analysis and sanity checks
+* Syntax is inconsistent across functions: some take x,y while others take formulas
+* Defaults plotting parameters are ugly and it can be difficult to customize
 
-* **Comparative Political Data Set I** (Armingeon et al. 2012)
-* Cases: 23 industrialized democracies, 1960-2012
-* Variables: *Government composition* (L-R); *state structure* (federalism, presidentialism, bicameralism, etc.); *macroeconomic indicators* (output, inflation, unemployment, deficit/debt, etc.); *demographics* (population, elderly)
+# lattice and ggplot2
 
-For more info: [http://www.ipw.unibe.ch/content/team/klaus_armingeon/comparative_political_data_sets/index_eng.html](http://www.ipw.unibe.ch/content/team/klaus_armingeon/comparative_political_data_sets/index_eng.html)
-
-# lattice v. ggplot2
-
-* lattice is 
+lattice is 
 
 a) faster (though only noticeable over many and large plots) 
 
@@ -71,7 +103,7 @@ c) better at trellis graphs
 
 d) able to do 3d graphs
 
-* ggplot2 is 
+ggplot2 is 
 
 a) generally more elegant
 
@@ -323,7 +355,7 @@ ggplot(data=pigs.data, aes(x=year, y=outlays)) + geom_line(aes(color=country))
 
 Note what happens when we specify the color parameter outside of the aesthetic operator. ggplot2 views these specifications as invalid graphical parameters. 
 
-```{r, fig.cap=" ", warning=FALSE}
+```{r, fig.cap=" ", warning=FALSE, eval=FALSE}
 ggplot(data=pigs.data, aes(x=year, y=outlays)) + geom_line(color=country)
 ggplot(data=pigs.data, aes(x=year, y=outlays)) + geom_line(color="country")
 ggplot(data=pigs.data, aes(x=year, y=outlays)) + geom_line(color="red")
