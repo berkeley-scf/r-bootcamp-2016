@@ -3,8 +3,6 @@
 % Kellie Ottoboni (kellieotto@berkeley.edu)
 % Built off of material by Chris Krogslund
 
-% note to C. Paciorek: make of this is crashing in R 3.2.1 on smeagol but not R 3.2.0 on arwen
-
 ```{r chunksetup, include=FALSE} 
 # include any code here you don't want to show up in the document,
 # e.g. package and dataset loading
@@ -32,48 +30,72 @@ medals <- read.csv("../data/all_medalists.csv", header = TRUE, stringsAsFactors 
 
 * All Summer Olympic medalists from 1896-2008
 * Variables include name, gender, country, sporting event, and type of medal won
+* We don't actually care about names of winners: we're interested in how many medals that different countries won
 
 For more info, see [The Guardian Datablog Olympic medal winners: every one since 1896 as open data](https://www.theguardian.com/sport/datablog/2012/jun/25/olympic-medal-winner-list-data)
 
+First, we'll use dplyr and tidyr to count the medals of each type won, for each country and each year.
 ```{r}
 head(medals)
 
-# dplyr and tidyr refresher - we want to count the medals of each type, by country and by year
+# dplyr and tidyr refresher
 medal_counts <- medals %>% group_by(Medal, Year, Country) %>% summarise(count = n())
 head(medal_counts)
+```
 
+This table is in tidy format. Wide (untidy) format can be useful for plotting in base plot (more on this later)
+```{r}
 medal_counts_wide <- medal_counts %>% spread(key = Medal, value = count) %>%
   ungroup() %>%
   mutate(Bronze = ifelse(is.na(Bronze), 0, Bronze)) %>% 
   mutate(Silver = ifelse(is.na(Silver), 0, Silver)) %>% 
   mutate(Gold = ifelse(is.na(Gold), 0, Gold)) 
 head(medal_counts_wide)
+```
 
-medal_lm <- lm(Gold ~ Bronze + Silver, data = medal_counts_wide)
-gold_medal_counts <- medal_counts %>% filter(Medal == "Gold")
-usa_gold_medals <- gold_medal_counts %>% 
+Finally, let's subset the data to gold medal counts for the US, for easier plotting.
+```{r}
+usa_gold_medals <-  medal_counts %>% 
+  filter(Medal == "Gold") %>%
   filter(Country == "United States")
 ```
 
-# Base plot
+# Base graphics
 
+The general call for base plot looks something like this:
+  
+```{r, eval=FALSE}
+plot(x=, y=, ...)
+```
+Additional parameters can be passed in to customize the plot:
 
-**TO DO**
-## Default plot
+* type: scatterplot? lines? etc
+* main: a title
+* xlab, ylab: x-axis and y-axis labels
+* col: color, either a string with the color name or a vector of color names for each point
+
+More layers can be added to the plot with additional calls to `lines`, `points`, `text`, etc.
 
 ```{r}
-plot(gold_medal_counts$Year, gold_medal_counts$count, main = "Gold Medal Counts")
-plot(usa_gold_medals$Year, usa_gold_medals$count, type = "l", main = "USA Gold Medals")
+plot(medal_counts_wide$Year, medal_counts_wide$Gold) # Basic
+plot(usa_gold_medals$Year, usa_gold_medals$count, type = "l", 
+     main = "USA Gold Medals",
+     xlab = "Year", ylab = "Count") # with updated parameters
+points(x = 1984, y = usa_gold_medals$count[usa_gold_medals$Year == 1984], 
+       col = "red", pch = 16)
 ```
 
 ## Other plot types
+
+These are just a few other types of plots you can make in base graphics.
+
 ```{r}
-hist(gold_medal_counts$count)
-plot(density(gold_medal_counts$count))
+boxplot(Gold~Year, data = medal_counts_wide)
+hist(medal_counts_wide$Gold)
+plot(density(medal_counts_wide$Gold))
 barplot(usa_gold_medals$count, width = 4, names.arg = usa_gold_medals$Year, main = "USA Gold Medals")
 mosaicplot(Year~Medal, medal_counts)
 
-boxplot(count~Country, medal_counts %>% filter(Country %in% c("United States", "Canada", "Mexico")))
 ```
 
 ## Object-oriented plots
@@ -81,8 +103,11 @@ boxplot(count~Country, medal_counts %>% filter(Country %in% c("United States", "
 * lattice and ggplot2 generally **don't** exhibit this sort of behavior
 
 ```{r, fig.cap=" "}
+medal_lm <- lm(Gold ~ Bronze + Silver, data = medal_counts_wide)
 plot(medal_counts_wide %>% select(-Country)) # Calls plotting method for class of the dataset ("data.frame")
 plot(medal_lm, which=1:2) # Calls plotting method for class of medal_lm object ("lm"), print first two plots only
+
+
 ```
 
 
@@ -121,6 +146,13 @@ The general call for lattice graphics looks something like this:
 graph_type(formula, data=, [options])
 ```
 
+The most common graph types:
+* xyplot: generic scatterplot
+* barchart
+* bwplot: boxplot
+* histogram
+* cloud: 3D scatterplot
+
 The specifics of the **formula** differ for each graph type, but the general format is straightforward
 
 ```{r, eval=FALSE}
@@ -133,6 +165,19 @@ y~x|A         # Show the relationship between x and y conditional on the values 
 y~x|A*B       # Show the relationship between x and y conditional on the combinations of A and B
 
 z~y*x         # Show the 3D relationship between x, y, and z
+```
+
+Let's recreate some of the plots we made above using lattice. The options for lattice overlap with the options for base graphics.
+```{r}
+xyplot(Gold~Year, data = medal_counts_wide, main = "Gold Medal Counts")
+xyplot(count~Year, data = usa_gold_medals, type = "l", main = "USA Gold Medals")
+
+bwplot(Year~Gold, data = medal_counts_wide, main = "Gold Medal Counts") # Labels are lost when lattice automatically converts Year to a factor
+bwplot(Gold~Year, data = medal_counts_wide, main = "Gold Medal Counts", horizontal = FALSE) # Flip the coordinates so year increases on the x-axis
+
+histogram(~Gold, medal_counts_wide, type="density", main = "Gold Medal Counts")
+densityplot(~Gold, medal_counts_wide, main = "Gold Medal Counts")
+barchart(count~Year, data = usa_gold_medals, width = 4, main = "USA Gold Medals", horizontal = FALSE)
 ```
 
 # Basic usage: ggplot2
