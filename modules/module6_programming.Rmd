@@ -1,5 +1,5 @@
 % R bootcamp, Module 6: Programming
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Paciorek
 
 ```{r chunksetup, include=FALSE} 
@@ -254,7 +254,7 @@ Using `...` as one of the arguments to a function allows a function to pass alon
 
 Here's an example of tailoring some plotting specifications that I use a lot. I generally define `pplot()` in my *.Rprofile* file so it is always available to me.
 
-```{r, usedots}
+```{r, usedots, fig.cap = ""}
 pplot <- function(x, y, ...) {
       plot(x, y, pch = 16, cex = 0.6, ...)
 }

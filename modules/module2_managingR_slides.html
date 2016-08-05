@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <meta name="author" content="August 2015, UC Berkeley" />
+  <meta name="author" content="August 2016, UC Berkeley" />
   <title>R bootcamp, Module 2: Managing R and R resources</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
@@ -34,7 +34,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div class="slide titlepage">
   <h1 class="title">R bootcamp, Module 2: Managing R and R resources</h1>
   <p class="author">
-August 2015, UC Berkeley
+August 2016, UC Berkeley
   </p>
   <p class="date">Chris Paciorek</p>
 </div>
@@ -102,22 +102,23 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 ## [16] &quot;f.grstat&quot;         &quot;f.identity&quot;       &quot;f.invlogit&quot;      
 ## [19] &quot;f.logit&quot;          &quot;f.logmatern.euc&quot;  &quot;f.lonlat2eucl&quot;   
 ## [22] &quot;f.matern.ang&quot;     &quot;f.matern.ang.cov&quot; &quot;f.matern.euc&quot;    
-## [25] &quot;f.merge&quot;          &quot;format.bytes&quot;     &quot;f.rdist.earth&quot;   
+## [25] &quot;f.merge&quot;          &quot;format_bytes&quot;     &quot;f.rdist.earth&quot;   
 ## [28] &quot;f.sort&quot;           &quot;f.sort2&quot;          &quot;f.squexp&quot;        
 ## [31] &quot;f.trimat&quot;         &quot;f.vecrep&quot;         &quot;getNcdf&quot;         
-## [34] &quot;im&quot;               &quot;indices&quot;          &quot;ls.sizes&quot;        
+## [34] &quot;im&quot;               &quot;indices&quot;          &quot;ls_sizes&quot;        
 ## [37] &quot;machineName&quot;      &quot;makePoly&quot;         &quot;module&quot;          
 ## [40] &quot;plot.ell&quot;         &quot;pmap&quot;             &quot;pmap2&quot;           
-## [43] &quot;pointsInPoly&quot;     &quot;pplot&quot;            &quot;pretty&quot;          
+## [43] &quot;pointsInPoly&quot;     &quot;pplot&quot;            &quot;pretty_size&quot;     
 ## [46] &quot;print.closeR&quot;     &quot;q&quot;                &quot;R2&quot;              
-## [49] &quot;R2D&quot;              &quot;rcsv&quot;             &quot;sizes&quot;           
-## [52] &quot;source&quot;           &quot;temp.colors&quot;      &quot;thresh&quot;          
-## [55] &quot;tplot&quot;            &quot;tsplot&quot;           &quot;wcsv&quot;</code></pre>
+## [49] &quot;R2D&quot;              &quot;rcsv&quot;             &quot;rotate&quot;          
+## [52] &quot;sizes&quot;            &quot;source&quot;           &quot;temp.colors&quot;     
+## [55] &quot;thresh&quot;           &quot;tplot&quot;            &quot;tsplot&quot;          
+## [58] &quot;wcsv&quot;</code></pre>
 <p><strong>Challenge</strong>: how would I find all of my objects that have 'x' in their names?</p>
 </div>
 <div id="packages-rs-killer-app" class="slide section level1">
 <h1>Packages (R's killer app)</h1>
-<p>Let's check out the <a href="http://www.cran.r-project.org/web/packages/">packages on CRAN</a>. In particular check out the <a href="http://www.cran.r-project.org/web/views/">CRAN Task Views</a>.</p>
+<p>Let's check out the <a href="https://cran.r-project.org/web/packages/">packages on CRAN</a>. In particular check out the <a href="https://cran.r-project.org/web/views/">CRAN Task Views</a>.</p>
 <p>Essentially any well-established and many not-so-established statistical methods and other functionality is available in a package.</p>
 <p>If you want to sound like an R expert, make sure to call them <em>packages</em> and not <em>libraries</em>. A <em>library</em> is the location in the directory structure where the packages are installed/stored.</p>
 <h3 id="using-packages">Using packages</h3>
@@ -128,20 +129,27 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 </ol>
 <p>To install a package, in RStudio, just do <code>Packages-&gt;Install Packages</code>.</p>
 <p>From the command line, you generally will just do</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">'fields'</span>, <span class="dt">repos =</span> <span class="st">'http://cran.cnr.berkeley.edu'</span>)</code></pre>
-<p>That should work without specifying the repository from which to download the package but sometimes you'll get errors indicating a package is not available for your version of R if you don't include an explicit repository.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">'fields'</span>) </code></pre>
+<p>That should work without specifying the repository from which to download the package (though sometimes you will be given a menu of repositories from which to select) but sometimes you'll get errors indicating a package is not available for your version of R if you don't include an explicit repository. In this case you'll likely need to use a repository that uses <code>http</code> rather than <code>https</code>, e.g.,</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">'fields'</span>, <span class="dt">repos =</span> <span class="st">'http://cran.cnr.berkeley.edu) </span></code></pre>
 <p>If you're on a network and are not the administrator of the machine, you may need to explicitly tell R to install it in a directory you are able to write in:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">'fields'</span>, <span class="dt">lib =</span> <span class="kw">file.path</span>(<span class="st">'~'</span>, <span class="st">'R'</span>))</code></pre>
-<p>If you're not using the VM, now (or at the break) would be a good point to install the various packages we need for the bootcamp, which can be done easily with the following command:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="kw">c</span>(<span class="st">'RSQLite'</span>, <span class="st">'plyr'</span>, <span class="st">'reshape2'</span>, <span class="st">'ggplot2'</span>, <span class="st">'chron'</span>,
-                              <span class="st">'gridExtra'</span>, <span class="st">'codetools'</span>, <span class="st">'rbenchmark'</span>,
-                              <span class="st">'lme4'</span>, <span class="st">'doParallel'</span>, <span class="st">'foreach'</span>, <span class="st">'xtable'</span>,
-                              <span class="st">'fields'</span>),  <span class="dt">repos =</span> <span class="st">&quot;http://cran.cnr.berkeley.edu&quot;</span>)</code></pre>
+<p>If you're using R directly installed on your laptop (i.e., most of you), now (or at the break) would be a good point to install the various packages we need for the bootcamp, which can be done easily with the following command:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="kw">c</span>(<span class="st">'chron'</span>,<span class="st">'colorspace'</span>,<span class="st">'DBI'</span>,<span class="st">'devtools'</span>,<span class="st">'dichromat'</span>,<span class="st">'digest'</span>,
+                   <span class="st">'doParallel'</span>, <span class="st">'dplyr'</span>, <span class="st">'fields'</span>,<span class="st">'foreach'</span>,<span class="st">'ggplot2'</span>,
+                   <span class="st">'gridExtra'</span>,<span class="st">'gtable'</span>,<span class="st">'inline'</span>, <span class="st">'iterators'</span>,<span class="st">'knitr'</span>,
+                   <span class="st">'labeling'</span>,<span class="st">'lme4'</span>,<span class="st">'mapproj'</span>,<span class="st">'maps'</span>,<span class="st">'munsell'</span>, <span class="st">'proto'</span>,
+                   <span class="st">'rbenchmark'</span>,<span class="st">'RColorBrewer'</span>,<span class="st">'Rcpp'</span>,<span class="st">'reshape2'</span>,<span class="st">'rJava'</span>,
+                   <span class="st">'RSQLite'</span>, <span class="st">'scales'</span>,<span class="st">'spam'</span>,<span class="st">'stringr'</span>,<span class="st">'tidyr'</span>,<span class="st">'xlsx'</span>,
+                   <span class="st">'xlsxjars'</span>,<span class="st">'xtable'</span>))</code></pre>
 <p>Note that packages often are dependent on other packages so these dependencies may be installed and loaded automatically. E.g., <em>fields</em> depends on <em>maps</em> and on <em>spam</em>.</p>
 <p>You can also install directly from a package zip/tarball rather than from CRAN by giving a filename instead of a package name.</p>
 <h3 id="general-information-about-a-package">General information about a package</h3>
 <p>You can use syntax as follows to get a list of the objects in a package and a brief description: <code>library(help = packageName)</code>.</p>
 <p>On CRAN there often <em>vignettes</em> that are an overview and describe usage of a package if you click on a specific package. The <em>reference manual</em> is just a single document with the help files for all of the objects/functions in a package, so may be helpful but often it's hard to get the big picture view from that.</p>
+</div>
+<div id="more-on-packages" class="slide section level1">
+<h1>More on packages</h1>
 <h3 id="the-search-path">The search path</h3>
 <p>To see the packages that are loaded and the order in which packages are searched for functions/objects: <code>search()</code>.</p>
 <p>To see what <em>libraries</em> (i.e., directory locations) R is retrieving packages from: <code>.libPaths()</code>.</p>
@@ -165,7 +173,7 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 <pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10</span>); y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10</span>)
 <span class="kw">lm</span>(y ~<span class="st"> </span>x)</code></pre>
 <pre><code>## y ~ x
-## &lt;environment: 0x2e14140&gt;</code></pre>
+## &lt;environment: 0x19c8a10&gt;</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r">stats::<span class="kw">lm</span>(y ~<span class="st"> </span>x)</code></pre>
 <pre><code>## 
 ## Call:
@@ -173,7 +181,7 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 ## 
 ## Coefficients:
 ## (Intercept)            x  
-##     -0.4523      -0.3185</code></pre>
+##     -0.1003      -0.5592</code></pre>
 <p>Can you explain what is going on? Consider the results of <code>search()</code>.</p>
 <h3 id="looking-inside-a-package">Looking inside a package</h3>
 <p>Packages are available as &quot;Package source&quot;, namely the raw code and help files, and &quot;binaries&quot;, where stuff is packaged up for R to use efficiently.</p>
@@ -195,27 +203,27 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 <li>It helps make your work reproducible</li>
 <li>It forces you to be more formal about your coding, which will improve your code</li>
 </ul>
-<p>See the <em>devtools</em> package and <code>package.skeleton()</code> for some useful tools to help you create a package. And there are lots of tips/tutorials online, including <a href="http://statistics.berkeley.edu/computing/cpp">material from a workshop I held in May 2013</a>.</p>
+<p>See the <em>devtools</em> package and <code>package.skeleton()</code> for some useful tools to help you create a package. And there are lots of tips/tutorials online, in particular <a href="http://r-pkgs.had.co.nz/">Hadley Wickham's R packages book</a>.</p>
 </div>
 <div id="the-working-directory" class="slide section level1">
 <h1>The working directory</h1>
 <p>To read and write from R, you need to have a firm grasp of where in the computer's filesystem you are reading and writing from.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">getwd</span>()  <span class="co"># what directory will R look in?</span>
 <span class="co"># Linux/Mac specific</span>
-<span class="kw">setwd</span>(<span class="st">'~/Desktop/r-bootcamp-2015'</span>) <span class="co"># change the working directory</span>
+<span class="kw">setwd</span>(<span class="st">'~/Desktop/r-bootcamp-2016'</span>) <span class="co"># change the working directory</span>
 <span class="kw">setwd</span>(<span class="st">'/Users/paciorek/Desktop/tmp'</span>) <span class="co"># absolute path</span>
 <span class="kw">getwd</span>()
-<span class="kw">setwd</span>(<span class="st">'../r-bootcamp-2015'</span>) <span class="co"># relative path</span>
+<span class="kw">setwd</span>(<span class="st">'../r-bootcamp-2016'</span>) <span class="co"># relative path</span>
 
 <span class="co"># Windows - use either \\ or / to indicate directories</span>
-<span class="co"># setwd('C:\\Users\\Your_username\\Desktop\\r-bootcamp-2015')</span>
-<span class="co"># setwd('..\\r-bootcamp-2015')</span>
+<span class="co"># setwd('C:\\Users\\Your_username\\Desktop\\r-bootcamp-2016')</span>
+<span class="co"># setwd('..\\r-bootcamp-2016')</span>
 
 <span class="co"># platform-agnostic</span>
-<span class="kw">setwd</span>(<span class="kw">file.path</span>(<span class="st">'~'</span>, <span class="st">'Desktop'</span>, <span class="st">'r-bootcamp-2015'</span>)) <span class="co"># change the working directory</span>
+<span class="kw">setwd</span>(<span class="kw">file.path</span>(<span class="st">'~'</span>, <span class="st">'Desktop'</span>, <span class="st">'r-bootcamp-2016'</span>)) <span class="co"># change the working directory</span>
 <span class="kw">setwd</span>(<span class="kw">file.path</span>(<span class="st">'/'</span>, <span class="st">'Users'</span>, <span class="st">'paciorek'</span>, <span class="st">'Desktop'</span>, <span class="st">'tmp'</span>)) <span class="co"># absolute path</span>
 <span class="kw">getwd</span>()
-<span class="kw">setwd</span>(<span class="kw">file.path</span>(<span class="st">'..'</span>, <span class="st">'r-bootcamp-2015'</span>, <span class="st">'modules'</span>)) <span class="co"># relative path</span></code></pre>
+<span class="kw">setwd</span>(<span class="kw">file.path</span>(<span class="st">'..'</span>, <span class="st">'r-bootcamp-2016'</span>, <span class="st">'modules'</span>)) <span class="co"># relative path</span></code></pre>
 <p>Many errors and much confusion result from you and R not being on the same page in terms of where in the directory structure you are.</p>
 </div>
 <div id="reading-text-files-into-r" class="slide section level1">
@@ -279,8 +287,8 @@ x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">require</span>(xtable)</code></pre>
 <pre><code>## Loading required package: xtable</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">xtable</span>(<span class="kw">table</span>(air$UniqueCarrier, air$Cancelled)), <span class="dt">type =</span> <span class="st">&quot;html&quot;</span>)</code></pre>
-<pre><code>## &lt;!-- html table generated in R 3.2.1 by xtable 1.7-4 package --&gt;
-## &lt;!-- Fri Aug 21 10:59:32 2015 --&gt;
+<pre><code>## &lt;!-- html table generated in R 3.2.2 by xtable 1.7-4 package --&gt;
+## &lt;!-- Fri Aug  5 15:04:42 2016 --&gt;
 ## &lt;table border=1&gt;
 ## &lt;tr&gt; &lt;th&gt;  &lt;/th&gt; &lt;th&gt; 0 &lt;/th&gt; &lt;th&gt; 1 &lt;/th&gt;  &lt;/tr&gt;
 ##   &lt;tr&gt; &lt;td align=&quot;right&quot;&gt; AA &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 49222 &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 1033 &lt;/td&gt; &lt;/tr&gt;
@@ -319,11 +327,11 @@ x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1
 <li>providing built-in backup</li>
 </ul>
 <h3 id="git-and-github">Git and Github</h3>
-<p>Git is a popular tool for version control. Git is based around the notion of a repository, which is basically a version-controlled project directory. Many people use it with the Github online hosting service for repositories.</p>
+<p>Git is a popular tool for version control. Git is based around the notion of a repository, which is basically a version-controlled project directory. Many people use it with the Github or Bitbucket online hosting services for repositories.</p>
 <p>In the introductory material, we've already seen how to get a copy of a Github repository on your local machine.</p>
 <p>As you're gathering by now, I've used Git and Github to manage all the content for this workshop.</p>
 <h3 id="making-changes-to-a-repository">Making changes to a repository</h3>
-<p>We'll go through a short example of making changes to the r-bootcamp-2015 repository. In this case you don't have permission to make changes so you'll just have to follow along as I do it. However, you could start your own repository and then you'd be able to do similar things.</p>
+<p>We'll go through a short example of making changes to the r-bootcamp-2016 repository. In this case you don't have permission to make changes so you'll just have to follow along as I do it. However, you could start your own repository and then you'd be able to do similar things.</p>
 <p>Note that there are <a href="http://git-scm.com/downloads/guis">graphical interfaces to Git</a> that you might want to check out, but here I'm just going to do it from the command line on my Mac.</p>
 <p>The basic notion we need is a <em>commit</em>. As we make changes to our files, we want to commit those changes to the repository regularly. A <em>commit</em> is a set of changes recorded with Git. We will often then <em>push</em> those changes to a remote copy of the repository, such as on Github.</p>
 <p>Here's a basic workflow:</p>
@@ -370,9 +378,9 @@ x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1
 </ol>
 <h3 id="using-the-ideas">Using the ideas</h3>
 <ol start="3" style="list-style-type: decimal">
-<li><p>Put the data/cpds.csv file in some other directory on your computer (or the VM if using the VM), such as <em>Downloads</em>. Use <code>setwd()</code> to set your working directory to be that directory. Read the file in using <code>read.csv()</code>. Now use <code>setwd()</code> to point to a different directory such as <em>Desktop</em>. Write the data frame out to a file without any row names and without quotes on the character strings.</p></li>
+<li><p>Put the <em>data/cpds.csv</em> file in some other directory on your computer, such as <em>Downloads</em>. Use <code>setwd()</code> to set your working directory to be that directory. Read the file in using <code>read.csv()</code>. Now use <code>setwd()</code> to point to a different directory such as <em>Desktop</em>. Write the data frame out to a file without any row names and without quotes on the character strings.</p></li>
 <li><p>Make a plot with the airline data. Save it as a PDF in <em>Desktop</em>. Now see what happens if you set the <em>width</em> and <em>height</em> arguments to be very small and see how it affects the resulting PDF. Do the same but setting width and height to be very large.</p></li>
-<li><p>Figure out where (what directory) the <em>graphics</em> package is stored on your machine. Is is the same as where the <em>fields</em> package is stored?</p></li>
+<li><p>Figure out where (what directory) the <em>graphics</em> package is stored on your machine. Is it the same as where the <em>fields</em> package is stored?</p></li>
 </ol>
 <h3 id="advanced">Advanced</h3>
 <ol start="6" style="list-style-type: decimal">

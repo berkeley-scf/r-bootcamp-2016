@@ -1,5 +1,5 @@
 % R bootcamp, Module 4: Calculations
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Paciorek
 
 ```{r chunksetup, include=FALSE} 
@@ -227,7 +227,7 @@ Often we want to do individual analyses within subsets or clusters of our data.
 
 As a first step, we might want to just split our dataset by a stratifying variable.  
 
-```{r}
+```{r, fig.cap ="", fig.width=12}
 # restrict to a few destinations
 DestSubset <- c('LAX','SEA','PHX','DEN','MSP','JFK','ATL','DFW','IAH', 'ORD') 
 airSmall <- subset(air, Dest %in% DestSubset)

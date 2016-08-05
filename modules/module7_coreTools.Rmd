@@ -1,5 +1,5 @@
 % R bootcamp, Module 7: Core tools
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Paciorek
 
 ```{r chunksetup, include=FALSE} 
@@ -28,7 +28,7 @@ Let's consider month in the airline dataset.
 
 Any hypotheses about the relationship of delays with month and time of day?
 
-```{r gamExample, cache=TRUE, fig.width=10}
+```{r gamExample, cache=TRUE, fig.width=10, fig.cap = ""}
 library(mgcv)
 thresh <- function(x, val, upper = TRUE) {
        if(upper) {
@@ -60,7 +60,7 @@ plot(mod_ORD)
 
 If we were willing to assume that the month and time effects are the same across destinations but there are different average delays by destination:
 
-```{r gamExampleFull, cache=TRUE, fig.width=10}
+```{r gamExampleFull, cache=TRUE, fig.width=10, fig.cap = ""}
 # this will take a minute or so
 mod_multiple <- gam(DepDelayCens ~ s(Month, k = 8) + s(SchedDepCont, k = 25) +
         Dest, data = airSmall)
@@ -95,7 +95,7 @@ plot(x, dnorm(x), type = 'l')
 lines(x, dt(x, df = 1), col = 'red')
 ```
 
-```{r}
+```{r, fig.cap = ""}
 rmultinom(1, 100, prob = c(.1, .1, .2, .3, .25, .05)) 
 
 x <- seq(0, 10, length = 100)
@@ -155,7 +155,7 @@ R provides functionality for optimization - finding maxima or minima of a functi
 
 A workhorse is `optim()`, which implements a number of optimization algorithms. 
 
-```{r eval=FALSE} 
+```{r eval=FALSE, fig.cap = ""} 
 require(fields)  
 ```
 ```{r fig.width=11, fig.height=5}
@@ -176,7 +176,7 @@ image.plot(x1s, x2s, matrix(log(fx), 100), xlab = '', ylab = '')
 optim(c(-2,0), banana)
 ```
 We can see the progression of evaluations of the objective function:
-```{r eval=FALSE}
+```{r eval=FALSE, fig.cap = ""}
 banana <- function(x) {   ## Rosenbrock Banana function
          points(x[1],x[2])
          Sys.sleep(.03)

@@ -1,14 +1,14 @@
 % R bootcamp, Module 0: Recruit processing
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Paciorek
 
 # A few administrative things
 
 ## Where to find stuff
 
-The Piazza site ([https://piazza.com/berkeley/summer2015/rbootcamp2015/home](https://piazza.com/berkeley/summer2015/rbootcamp2015/home)) is the main site for the bootcamp. It has information on logistics, software installation, and the Q&A area for online questions.  
+The Piazza site ([https://piazza.com/berkeley/summer2016/rbootcamp2016/home](https://piazza.com/berkeley/summer2016/rbootcamp2016/home)) is the main site for the bootcamp. It has information on logistics, software installation, and the Q&A area for online questions.  
 
-The Github site ([https://github.com/berkeley-scf/r-bootcamp-2015](https://github.com/berkeley-scf/r-bootcamp-2015)) is updated more frequently (sometimes in real time) and is the master repository for materials for the modules; you can also get the individual files from Github. Instructions for accessing the materials on Github are on the Piazza site.
+The Github site ([https://github.com/berkeley-scf/r-bootcamp-2016](https://github.com/berkeley-scf/r-bootcamp-2016)) is updated more frequently (sometimes in real time) and is the master repository for materials for the modules; you can also get the individual files from Github. Instructions for accessing the materials on Github are on the Piazza site.
 
 If you have an administrative question, email r-bootcamp@lists.berkeley.edu.
 
@@ -27,9 +27,9 @@ The bootcamp will be organized in modules, each of which will be a combination o
 Many of the modules will use a common dataset as an example on which to carry out various operations. We'll focus on a dataset of on-time information for US airline flights, 1987-2008 provided by the US government's Bureau of Transportation Statistics. This dataset is available in its entirety [here](http://stat-computing.org/dataexpo/2009/the-data.html). However, it's about 3.5 Gb compressed, so we'll work with a subset of just flights departing from SFO for 2005-2008, available in the Github repository as *airline.csv*. (Note that this is the full population of such flights -- I'll fit some statistical models but the interpretation is tricky as we are not working with a sample from a well-defined population.)
 There's also a smaller subsample of the SFO flights in *airlineSubsample.csv* - you can use that in place of *airline.csv* if *airline.csv* is taking a while to load into R on your machine.
 
-Counselors will be available to help answer any questions you have (just wave to one of them), or feel free to just ask the presenter during the presentation. The counselors will also be monitoring the [Piazza Q&A area](https://piazza.com/berkeley/summer2015/rbootcamp2015/home), so feel free to type in a question there and one of the counselors will answer the question. Or if you know the answer, help us out by answering it yourself or adding your thoughts. 
+Counselors will be available to help answer any questions you have (just wave to one of them), or feel free to just ask the presenter during the presentation. The counselors will also be monitoring the [Piazza Q&A area](https://piazza.com/berkeley/summer2016/rbootcamp2016/home), so feel free to type in a question there and one of the counselors will answer the question. Or if you know the answer, help us out by answering it yourself or adding your thoughts. 
 
-Your counseloRs are: Chris Krogslund, Chris Kennedy, Kellie Ottoboni, and Karl Kumbier.
+Your counseloRs are: Kellie Ottoboni (Statistics/BIDS), Rochelle Terman (Political Science/D-Lab), Chris Kennedy (Political Science/D-Lab), Evan Muzzall (Biology/D-Lab), Alex Padron (Biology), and Lauren Ponisio (ESPM/BIDS).
 
 # Suggestions on how to get the most out of the bootcamp
 
@@ -52,7 +52,7 @@ A few additional thoughts on my pedagogical philosophy here:
 
 # RStudio and R Markdown
 
-We'll present most of the material from within RStudio, using R Markdown documents with embedded R code. R Markdown is an extension to the Markdown markup language that makes it easy to write HTML in a simple plain text format.  This allows us to both run the R code directly as well as compile on-the-fly to an HTML file that can be used for presentation. All files will be available on [Github](https://github.com/berkeley-scf/r-bootcamp-2015).  
+We'll present most of the material from within RStudio, using R Markdown documents with embedded R code. R Markdown is an extension to the Markdown markup language that makes it easy to write HTML in a simple plain text format.  This allows us to both run the R code directly as well as compile on-the-fly to an HTML file that can be used for presentation. All files will be available on [Github](https://github.com/berkeley-scf/r-bootcamp-2016).  
 
 Note: The files named *moduleX_blah_slides.html* have individual slides, while the files named *moduleX_blah.html* have the same content but all on one page.
 
@@ -66,8 +66,8 @@ To download the files from Github, you can do the following.
 
 Within RStudio go to File->New Project->Version Control->Git and enter:
 
-- "Repository URL": https://github.com/berkeley-scf/r-bootcamp-2015
-- "Project Directory Name": r-bootcamp-2015 (or something else of your choosing)
+- "Repository URL": https://github.com/berkeley-scf/r-bootcamp-2016
+- "Project Directory Name": r-bootcamp-2016 (or something else of your choosing)
 - "Directory": ~/Desktop (or somewhere of your choosing)
 
 Then to update from the repository to get any changes we've made, you can select (from within RStudio):
@@ -77,16 +77,16 @@ or from the Environment/History/Git window, click on the Git tab and then on the
 
 Be warned that you probably do not want to make your own notes or changes to the files we are providing. Because if you do, and you then do a "Git Pull" to update the materials, you'll have to deal with the conflict between your local version and our version. You probably will want to make a personal copy of such files in another directory or by making copies of files with new names.
 
-## From a terminal window
+## From a Mac/Linux terminal window
 
 Run the following commands:
 
 - `cd /directory/where/you/want/repository/located`
-- `git clone https://github.com/berkeley-scf/r-bootcamp-2015`
+- `git clone https://github.com/berkeley-scf/r-bootcamp-2016`
 
 Then to update from the repository to get any changes we've made:
 
-- `cd /directory/where/you/put/the/repository/r-bootcamp-2015`
+- `cd /directory/where/you/put/the/repository/r-bootcamp-2016`
 - `git pull`
 
 
@@ -103,10 +103,12 @@ Then to update from the repository to get any changes we've made:
 
 # Modes of using R
 
-- From the command line in a Linux/Mac terminal window
-- Using the Windows/Mac GUIs
 - Using the RStudio GUI, an 'integrated development environment'
+- From the command line in a Linux/Mac terminal window
 - Running an R script in the background on a Linux/Mac machine (Windows?)
+- Using the Windows/Mac GUIs
+
+
 
 # Starting R and RStudio
 
@@ -145,7 +147,7 @@ RStudio provides an integrated development environment in which all of these pie
 
 - Python
 - Matlab/Octave
-- Julia?
+- Julia
 - C/C++
 - SAS
 - Stata
@@ -164,5 +166,6 @@ The building blocks of scientific computing include:
 
 # The Legal Stuff
 
-- Some of this material was drawn from [Jared Knowles R bootcamp](http://jaredknowles.com/r-bootcamp/url)
-- You are free to use, modify and redistribute any of this material with or without attribution
+- Some of this material was drawn from [Jared Knowles R bootcamp](http://jaredknowles.com/r-bootcamp/url).
+- Contributions from Kellie Ottoboni, Rochelle Terman, Chris Krogslund, and Jarrod Millman. Thank you!!!
+- You are free to use, modify and redistribute any of this material with or without attribution, but if you use chunks of material, I'd appreciate a call-out.

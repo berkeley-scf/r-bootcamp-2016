@@ -385,7 +385,7 @@ execution, and reporting.  For more information, see Bioconductor&#39;s <a href=
 </code></pre>
 
 <pre><code>##    user  system elapsed 
-##   0.748   0.000   0.747
+##   0.771   0.032   0.803
 </code></pre>
 
 <pre><code class="r">library(rbenchmark)
@@ -396,8 +396,8 @@ benchmark(ifelse(x &lt; 0, x, 0),
 </code></pre>
 
 <pre><code>##   replications elapsed
-## 1            5   4.378
-## 2            5   0.394
+## 1            5   5.477
+## 2            5   0.469
 </code></pre>
 
 <h1>Profiling your code</h1>
@@ -474,8 +474,8 @@ gc()
 </code></pre>
 
 <pre><code>##             used  (Mb) gc trigger   (Mb)  max used   (Mb)
-## Ncells    181872   9.8     752384   40.2    799850   42.8
-## Vcells 109737998 837.3  165990454 1266.5 138174068 1054.2
+## Ncells    323116  17.3    1168576   62.5    967393   51.7
+## Vcells 109897843 838.5  166211388 1268.1 138339454 1055.5
 </code></pre>
 
 <pre><code class="r">rm(x)
@@ -483,8 +483,8 @@ gc()
 </code></pre>
 
 <pre><code>##           used (Mb) gc trigger   (Mb)  max used   (Mb)
-## Ncells  181869  9.8     752384   40.2    799850   42.8
-## Vcells 9738005 74.3  132792363 1013.2 138174068 1054.2
+## Ncells  323125 17.3    1168576   62.5    967393   51.7
+## Vcells 9897870 75.6  132969110 1014.5 138339454 1055.5
 </code></pre>
 
 <h1>Scripting</h1>
@@ -541,8 +541,8 @@ help file for any standard R function for how this is done in that context).</li
 
 <h1>Good coding practices: syntax</h1>
 
-<p>For an example that demonstrates some of these ideas, see <em>goodCode.R</em>.
-And for a counterexample, see <em>badCode.R</em>.</p>
+<p>For an example that demonstrates some of these ideas, see <a href="goodCode.R">goodCode.R</a>.
+And for a counterexample, see <a href="badCode.R">badCode.R</a>.</p>
 
 <ul>
 <li>Header information: put metainfo on the code into the first few lines
@@ -621,7 +621,7 @@ complete set of instructions which generated the figures.</p>
 
 <ul>
 <li><a href="http://arxiv.org/abs/1210.0530">Wilson et at., Best practices for scientific computing, ArXiv:1210:0530</a></li>
-<li><a href="faculty.chicagobooth.edu/jesse.shapiro/research/CodeAndData.pdf">Gentzkow and Shapiro tutorial for social scientists</a></li>
+<li><a href="https://web.stanford.edu/%7Egentzkow/research/CodeAndData.pdf">Gentzkow and Shapiro tutorial for social scientists</a></li>
 </ul>
 
 <h1>Some ideas for improving reproducibility</h1>
@@ -647,7 +647,7 @@ complete set of instructions which generated the figures.</p>
 
 <p>Please fill out the feedback survey.</p>
 
-<p><a href="http://bit.ly/rbootcamp2015">http://bit.ly/rbootcamp2015</a></p>
+<p><a href="http://bit.ly/rbootcamp2016">http://bit.ly/rbootcamp2016</a></p>
 
 </body>
 

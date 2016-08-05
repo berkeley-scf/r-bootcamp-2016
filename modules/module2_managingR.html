@@ -289,24 +289,25 @@ ls()
 ## [16] &quot;f.grstat&quot;         &quot;f.identity&quot;       &quot;f.invlogit&quot;      
 ## [19] &quot;f.logit&quot;          &quot;f.logmatern.euc&quot;  &quot;f.lonlat2eucl&quot;   
 ## [22] &quot;f.matern.ang&quot;     &quot;f.matern.ang.cov&quot; &quot;f.matern.euc&quot;    
-## [25] &quot;f.merge&quot;          &quot;format.bytes&quot;     &quot;f.rdist.earth&quot;   
+## [25] &quot;f.merge&quot;          &quot;format_bytes&quot;     &quot;f.rdist.earth&quot;   
 ## [28] &quot;f.sort&quot;           &quot;f.sort2&quot;          &quot;f.squexp&quot;        
 ## [31] &quot;f.trimat&quot;         &quot;f.vecrep&quot;         &quot;getNcdf&quot;         
-## [34] &quot;im&quot;               &quot;indices&quot;          &quot;ls.sizes&quot;        
+## [34] &quot;im&quot;               &quot;indices&quot;          &quot;ls_sizes&quot;        
 ## [37] &quot;machineName&quot;      &quot;makePoly&quot;         &quot;module&quot;          
 ## [40] &quot;plot.ell&quot;         &quot;pmap&quot;             &quot;pmap2&quot;           
-## [43] &quot;pointsInPoly&quot;     &quot;pplot&quot;            &quot;pretty&quot;          
+## [43] &quot;pointsInPoly&quot;     &quot;pplot&quot;            &quot;pretty_size&quot;     
 ## [46] &quot;print.closeR&quot;     &quot;q&quot;                &quot;R2&quot;              
-## [49] &quot;R2D&quot;              &quot;rcsv&quot;             &quot;sizes&quot;           
-## [52] &quot;source&quot;           &quot;temp.colors&quot;      &quot;thresh&quot;          
-## [55] &quot;tplot&quot;            &quot;tsplot&quot;           &quot;wcsv&quot;
+## [49] &quot;R2D&quot;              &quot;rcsv&quot;             &quot;rotate&quot;          
+## [52] &quot;sizes&quot;            &quot;source&quot;           &quot;temp.colors&quot;     
+## [55] &quot;thresh&quot;           &quot;tplot&quot;            &quot;tsplot&quot;          
+## [58] &quot;wcsv&quot;
 </code></pre>
 
 <p><strong>Challenge</strong>: how would I find all of my objects that have &#39;x&#39; in their names?</p>
 
 <h1>Packages (R&#39;s killer app)</h1>
 
-<p>Let&#39;s check out the <a href="http://www.cran.r-project.org/web/packages/">packages on CRAN</a>. In particular check out the <a href="http://www.cran.r-project.org/web/views/">CRAN Task Views</a>.</p>
+<p>Let&#39;s check out the <a href="https://cran.r-project.org/web/packages/">packages on CRAN</a>. In particular check out the <a href="https://cran.r-project.org/web/views/">CRAN Task Views</a>.</p>
 
 <p>Essentially any well-established and many not-so-established statistical methods and other functionality is available in a package. </p>
 
@@ -325,22 +326,28 @@ ls()
 
 <p>From the command line, you generally will just do</p>
 
-<pre><code class="r">install.packages(&#39;fields&#39;, repos = &#39;http://cran.cnr.berkeley.edu&#39;)
+<pre><code class="r">install.packages(&#39;fields&#39;) 
 </code></pre>
 
-<p>That should work without specifying the repository from which to download the package but sometimes you&#39;ll get errors indicating a package is not available for your version of R if you don&#39;t include an explicit repository.</p>
+<p>That should work without specifying the repository from which to download the package (though sometimes you will be given a menu of repositories from which to select) but sometimes you&#39;ll get errors indicating a package is not available for your version of R if you don&#39;t include an explicit repository. In this case you&#39;ll likely need to use a repository that uses <code>http</code> rather than <code>https</code>, e.g.,</p>
+
+<pre><code class="r">install.packages(&#39;fields&#39;, repos = &#39;http://cran.cnr.berkeley.edu) 
+</code></pre>
 
 <p>If you&#39;re on a network and are not the administrator of the machine, you may need to explicitly tell R to install it in a directory you are able to write in:</p>
 
 <pre><code class="r">install.packages(&#39;fields&#39;, lib = file.path(&#39;~&#39;, &#39;R&#39;))
 </code></pre>
 
-<p>If you&#39;re not using the VM, now (or at the break) would be a good point to install the various packages we need for the bootcamp, which can be done easily with the following command:</p>
+<p>If you&#39;re using R directly installed on your laptop (i.e., most of you), now (or at the break) would be a good point to install the various packages we need for the bootcamp, which can be done easily with the following command:</p>
 
-<pre><code class="r">install.packages(c(&#39;RSQLite&#39;, &#39;plyr&#39;, &#39;reshape2&#39;, &#39;ggplot2&#39;, &#39;chron&#39;,
-                              &#39;gridExtra&#39;, &#39;codetools&#39;, &#39;rbenchmark&#39;,
-                              &#39;lme4&#39;, &#39;doParallel&#39;, &#39;foreach&#39;, &#39;xtable&#39;,
-                              &#39;fields&#39;),  repos = &quot;http://cran.cnr.berkeley.edu&quot;)
+<pre><code class="r">install.packages(c(&#39;chron&#39;,&#39;colorspace&#39;,&#39;DBI&#39;,&#39;devtools&#39;,&#39;dichromat&#39;,&#39;digest&#39;,
+                   &#39;doParallel&#39;, &#39;dplyr&#39;, &#39;fields&#39;,&#39;foreach&#39;,&#39;ggplot2&#39;,
+                   &#39;gridExtra&#39;,&#39;gtable&#39;,&#39;inline&#39;, &#39;iterators&#39;,&#39;knitr&#39;,
+                   &#39;labeling&#39;,&#39;lme4&#39;,&#39;mapproj&#39;,&#39;maps&#39;,&#39;munsell&#39;, &#39;proto&#39;,
+                   &#39;rbenchmark&#39;,&#39;RColorBrewer&#39;,&#39;Rcpp&#39;,&#39;reshape2&#39;,&#39;rJava&#39;,
+                   &#39;RSQLite&#39;, &#39;scales&#39;,&#39;spam&#39;,&#39;stringr&#39;,&#39;tidyr&#39;,&#39;xlsx&#39;,
+                   &#39;xlsxjars&#39;,&#39;xtable&#39;))
 </code></pre>
 
 <p>Note that packages often are dependent on other packages so these dependencies may be installed and loaded automatically. E.g., <em>fields</em> depends on <em>maps</em> and on <em>spam</em>.</p>
@@ -352,6 +359,8 @@ ls()
 <p>You can use syntax as follows to get a list of the objects in a package and a brief description: <code>library(help = packageName)</code>. </p>
 
 <p>On CRAN there often <em>vignettes</em> that are an overview and describe usage of a package if you click on a specific package. The <em>reference manual</em> is just a single document with the help files for all of the objects/functions in a package, so may be helpful but often it&#39;s hard to get the big picture view from that.</p>
+
+<h1>More on packages</h1>
 
 <h3>The search path</h3>
 
@@ -393,7 +402,7 @@ lm(y ~ x)
 </code></pre>
 
 <pre><code>## y ~ x
-## &lt;environment: 0x3a9a808&gt;
+## &lt;environment: 0xba134a0&gt;
 </code></pre>
 
 <pre><code class="r">stats::lm(y ~ x)
@@ -405,7 +414,7 @@ lm(y ~ x)
 ## 
 ## Coefficients:
 ## (Intercept)            x  
-##     -0.3788      -0.3348
+##    -0.17608      0.06357
 </code></pre>
 
 <p>Can you explain what is going on? Consider the results of <code>search()</code>.</p>
@@ -439,7 +448,7 @@ ls data
 <li>It forces you to be more formal about your coding, which will improve your code</li>
 </ul>
 
-<p>See the <em>devtools</em> package and <code>package.skeleton()</code> for some useful tools to help you create a package. And there are lots of tips/tutorials online, including <a href="http://statistics.berkeley.edu/computing/cpp">material from a workshop I held in May 2013</a>.</p>
+<p>See the <em>devtools</em> package and <code>package.skeleton()</code> for some useful tools to help you create a package. And there are lots of tips/tutorials online, in particular <a href="http://r-pkgs.had.co.nz/">Hadley Wickham&#39;s R packages book</a>.</p>
 
 <h1>The working directory</h1>
 
@@ -447,20 +456,20 @@ ls data
 
 <pre><code class="r">getwd()  # what directory will R look in?
 # Linux/Mac specific
-setwd(&#39;~/Desktop/r-bootcamp-2015&#39;) # change the working directory
+setwd(&#39;~/Desktop/r-bootcamp-2016&#39;) # change the working directory
 setwd(&#39;/Users/paciorek/Desktop/tmp&#39;) # absolute path
 getwd()
-setwd(&#39;../r-bootcamp-2015&#39;) # relative path
+setwd(&#39;../r-bootcamp-2016&#39;) # relative path
 
 # Windows - use either \\ or / to indicate directories
-# setwd(&#39;C:\\Users\\Your_username\\Desktop\\r-bootcamp-2015&#39;)
-# setwd(&#39;..\\r-bootcamp-2015&#39;)
+# setwd(&#39;C:\\Users\\Your_username\\Desktop\\r-bootcamp-2016&#39;)
+# setwd(&#39;..\\r-bootcamp-2016&#39;)
 
 # platform-agnostic
-setwd(file.path(&#39;~&#39;, &#39;Desktop&#39;, &#39;r-bootcamp-2015&#39;)) # change the working directory
+setwd(file.path(&#39;~&#39;, &#39;Desktop&#39;, &#39;r-bootcamp-2016&#39;)) # change the working directory
 setwd(file.path(&#39;/&#39;, &#39;Users&#39;, &#39;paciorek&#39;, &#39;Desktop&#39;, &#39;tmp&#39;)) # absolute path
 getwd()
-setwd(file.path(&#39;..&#39;, &#39;r-bootcamp-2015&#39;, &#39;modules&#39;)) # relative path
+setwd(file.path(&#39;..&#39;, &#39;r-bootcamp-2016&#39;, &#39;modules&#39;)) # relative path
 </code></pre>
 
 <p>Many errors and much confusion result from you and R not being on the same page in terms of where in the directory structure you are.</p>
@@ -547,8 +556,8 @@ dev.off()
 print(xtable(table(air$UniqueCarrier, air$Cancelled)), type = &quot;html&quot;)
 </code></pre>
 
-<pre><code>## &lt;!-- html table generated in R 3.2.1 by xtable 1.7-4 package --&gt;
-## &lt;!-- Fri Aug 21 10:59:46 2015 --&gt;
+<pre><code>## &lt;!-- html table generated in R 3.2.2 by xtable 1.7-4 package --&gt;
+## &lt;!-- Fri Aug  5 15:04:56 2016 --&gt;
 ## &lt;table border=1&gt;
 ## &lt;tr&gt; &lt;th&gt;  &lt;/th&gt; &lt;th&gt; 0 &lt;/th&gt; &lt;th&gt; 1 &lt;/th&gt;  &lt;/tr&gt;
 ##   &lt;tr&gt; &lt;td align=&quot;right&quot;&gt; AA &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 49222 &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 1033 &lt;/td&gt; &lt;/tr&gt;
@@ -594,7 +603,7 @@ print(xtable(table(air$UniqueCarrier, air$Cancelled)), type = &quot;html&quot;)
 
 <h3>Git and Github</h3>
 
-<p>Git is a popular tool for version control. Git is based around the notion of a repository, which is basically a version-controlled project directory. Many people use it with the Github online hosting service for repositories.</p>
+<p>Git is a popular tool for version control. Git is based around the notion of a repository, which is basically a version-controlled project directory. Many people use it with the Github or Bitbucket online hosting services for repositories.</p>
 
 <p>In the introductory material, we&#39;ve already seen how to get a copy of a Github repository on your local machine. </p>
 
@@ -602,7 +611,7 @@ print(xtable(table(air$UniqueCarrier, air$Cancelled)), type = &quot;html&quot;)
 
 <h3>Making changes to a repository</h3>
 
-<p>We&#39;ll go through a short example of making changes to the r-bootcamp-2015 repository. In this case you don&#39;t have permission to make changes so you&#39;ll just have to follow along as I do it. However, you could start your own repository and then you&#39;d be able to do similar things.</p>
+<p>We&#39;ll go through a short example of making changes to the r-bootcamp-2016 repository. In this case you don&#39;t have permission to make changes so you&#39;ll just have to follow along as I do it. However, you could start your own repository and then you&#39;d be able to do similar things.</p>
 
 <p>Note that there are <a href="http://git-scm.com/downloads/guis">graphical interfaces to Git</a> that you might want to check out, but here I&#39;m just going to do it from the command line on my Mac.</p>
 
@@ -667,11 +676,11 @@ git push
 
 <h3>Using the ideas</h3>
 
-<p>3) Put the data/cpds.csv file in some other directory on your computer (or the VM if using the VM), such as <em>Downloads</em>. Use <code>setwd()</code> to set your working directory to be that directory. Read the file in using <code>read.csv()</code>.  Now use <code>setwd()</code> to point to a different directory such as <em>Desktop</em>. Write the data frame out to a file without any row names and without quotes on the character strings.</p>
+<p>3) Put the <em>data/cpds.csv</em> file in some other directory on your computer, such as <em>Downloads</em>. Use <code>setwd()</code> to set your working directory to be that directory. Read the file in using <code>read.csv()</code>.  Now use <code>setwd()</code> to point to a different directory such as <em>Desktop</em>. Write the data frame out to a file without any row names and without quotes on the character strings.</p>
 
 <p>4) Make a plot with the airline data. Save it as a PDF in <em>Desktop</em>. Now see what happens if you set the <em>width</em> and <em>height</em> arguments to be very small and see how it affects the resulting PDF. Do the same but setting width and height to be very large.</p>
 
-<p>5) Figure out where (what directory) the <em>graphics</em> package is stored on your machine. Is is the same as where the <em>fields</em> package is stored?</p>
+<p>5) Figure out where (what directory) the <em>graphics</em> package is stored on your machine. Is it the same as where the <em>fields</em> package is stored?</p>
 
 <h3>Advanced</h3>
 

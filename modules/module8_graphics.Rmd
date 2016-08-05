@@ -1,5 +1,5 @@
 % R Bootcamp, Module 8: Graphics
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Krogslund (ckrogslund@berkeley.edu)
 
 % note to C. Paciorek: make of this is crashing in R 3.2.1 on smeagol but not R 3.2.0 on arwen

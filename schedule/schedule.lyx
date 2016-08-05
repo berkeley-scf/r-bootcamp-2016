@@ -348,17 +348,17 @@ Break (15 minutes)
 \end_layout
 
 \begin_layout Itemize
-Module 5: Doing useful stuff (Chris Krogslund)
+Module 5: Doing useful stuff (Rochelle)
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-stratified analyses: groupwise operations (see plyr: subset, mutate, summarise,
+stratified analyses: groupwise operations (see dplyr: subset, mutate, summarise,
  arrange); split-apply-combine
 \end_layout
 
 \begin_layout Itemize
-reshape
+reshaping and tidying data
 \end_layout
 
 \begin_layout Itemize
@@ -377,17 +377,6 @@ status open
 
 \begin_layout Itemize
 breakout problems/homework 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-[Chris to prepare this: assign overnight homework - data analysis problem,
- perhaps with some programming - bootstrap or cross-validation]
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \end_deeper
@@ -470,7 +459,7 @@ Break (15 minutes)
 \end_layout
 
 \begin_layout Itemize
-Module 8: Graphics (Chris Krogslund)
+Module 8: Graphics (Kellie)
 \begin_inset Note Note
 status open
 

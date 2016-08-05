@@ -1,5 +1,5 @@
 % R bootcamp, Module 2: Managing R and R resources
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Paciorek
 
 ```{r chunksetup, include=FALSE} 
@@ -43,7 +43,7 @@ air <- read.csv('../data/airline.csv', stringsAsFactors = FALSE)
 
 # Packages (R's killer app)
 
-Let's check out the [packages on CRAN](http://www.cran.r-project.org/web/packages/). In particular check out the [CRAN Task Views](http://www.cran.r-project.org/web/views/).
+Let's check out the [packages on CRAN](https://cran.r-project.org/web/packages/). In particular check out the [CRAN Task Views](https://cran.r-project.org/web/views/).
 
 Essentially any well-established and many not-so-established statistical methods and other functionality is available in a package. 
 
@@ -60,22 +60,29 @@ To install a package, in RStudio, just do `Packages->Install Packages`.
 
 From the command line, you generally will just do
 ```{r eval = FALSE}
-install.packages('fields', repos = 'http://cran.cnr.berkeley.edu')
+install.packages('fields') 
 ```
-That should work without specifying the repository from which to download the package but sometimes you'll get errors indicating a package is not available for your version of R if you don't include an explicit repository.
+That should work without specifying the repository from which to download the package (though sometimes you will be given a menu of repositories from which to select) but sometimes you'll get errors indicating a package is not available for your version of R if you don't include an explicit repository. In this case you'll likely need to use a repository that uses `http` rather than `https`, e.g.,
+
+```{r eval = FALSE}
+install.packages('fields', repos = 'http://cran.cnr.berkeley.edu) 
+```
 
 If you're on a network and are not the administrator of the machine, you may need to explicitly tell R to install it in a directory you are able to write in:
 ```{r eval = FALSE}
 install.packages('fields', lib = file.path('~', 'R'))
 ```
 
-If you're not using the VM, now (or at the break) would be a good point to install the various packages we need for the bootcamp, which can be done easily with the following command:
+If you're using R directly installed on your laptop (i.e., most of you), now (or at the break) would be a good point to install the various packages we need for the bootcamp, which can be done easily with the following command:
 
 ```{r eval=FALSE}
-install.packages(c('RSQLite', 'plyr', 'reshape2', 'ggplot2', 'chron',
-                              'gridExtra', 'codetools', 'rbenchmark',
-                              'lme4', 'doParallel', 'foreach', 'xtable',
-                              'fields'),  repos = "http://cran.cnr.berkeley.edu")
+install.packages(c('chron','colorspace','DBI','devtools','dichromat','digest',
+                   'doParallel', 'dplyr', 'fields','foreach','ggplot2',
+                   'gridExtra','gtable','inline', 'iterators','knitr',
+                   'labeling','lme4','mapproj','maps','munsell', 'proto',
+                   'rbenchmark','RColorBrewer','Rcpp','reshape2','rJava',
+                   'RSQLite', 'scales','spam','stringr','tidyr','xlsx',
+                   'xlsxjars','xtable'))
 ```
 
 Note that packages often are dependent on other packages so these dependencies may be installed and loaded automatically. E.g., *fields* depends on *maps* and on *spam*.
@@ -87,6 +94,8 @@ You can also install directly from a package zip/tarball rather than from CRAN b
 You can use syntax as follows to get a list of the objects in a package and a brief description: `library(help = packageName)`. 
 
 On CRAN there often *vignettes* that are an overview and describe usage of a package if you click on a specific package. The *reference manual* is just a single document with the help files for all of the objects/functions in a package, so may be helpful but often it's hard to get the big picture view from that.
+
+# More on packages
 
 ### The search path
 
@@ -144,7 +153,7 @@ Why make a package?
 * It helps make your work reproducible
 * It forces you to be more formal about your coding, which will improve your code
 
-See the *devtools* package and `package.skeleton()` for some useful tools to help you create a package. And there are lots of tips/tutorials online, including [material from a workshop I held in May 2013](http://statistics.berkeley.edu/computing/cpp).
+See the *devtools* package and `package.skeleton()` for some useful tools to help you create a package. And there are lots of tips/tutorials online, in particular [Hadley Wickham's R packages book](http://r-pkgs.had.co.nz/).
 
 # The working directory
 
@@ -153,20 +162,20 @@ To read and write from R, you need to have a firm grasp of where in the computer
 ```{r, eval=FALSE}
 getwd()  # what directory will R look in?
 # Linux/Mac specific
-setwd('~/Desktop/r-bootcamp-2015') # change the working directory
+setwd('~/Desktop/r-bootcamp-2016') # change the working directory
 setwd('/Users/paciorek/Desktop/tmp') # absolute path
 getwd()
-setwd('../r-bootcamp-2015') # relative path
+setwd('../r-bootcamp-2016') # relative path
 
 # Windows - use either \\ or / to indicate directories
-# setwd('C:\\Users\\Your_username\\Desktop\\r-bootcamp-2015')
-# setwd('..\\r-bootcamp-2015')
+# setwd('C:\\Users\\Your_username\\Desktop\\r-bootcamp-2016')
+# setwd('..\\r-bootcamp-2016')
 
 # platform-agnostic
-setwd(file.path('~', 'Desktop', 'r-bootcamp-2015')) # change the working directory
+setwd(file.path('~', 'Desktop', 'r-bootcamp-2016')) # change the working directory
 setwd(file.path('/', 'Users', 'paciorek', 'Desktop', 'tmp')) # absolute path
 getwd()
-setwd(file.path('..', 'r-bootcamp-2015', 'modules')) # relative path
+setwd(file.path('..', 'r-bootcamp-2016', 'modules')) # relative path
 ```
 Many errors and much confusion result from you and R not being on the same page in terms of where in the directory structure you are.
 
@@ -244,7 +253,7 @@ However, this is a hassle to do manually. Instead of manually trying to keep tra
 
 ### Git and Github
 
-Git is a popular tool for version control. Git is based around the notion of a repository, which is basically a version-controlled project directory. Many people use it with the Github online hosting service for repositories.
+Git is a popular tool for version control. Git is based around the notion of a repository, which is basically a version-controlled project directory. Many people use it with the Github or Bitbucket online hosting services for repositories.
 
 In the introductory material, we've already seen how to get a copy of a Github repository on your local machine. 
 
@@ -252,7 +261,7 @@ As you're gathering by now, I've used Git and Github to manage all the content f
 
 ### Making changes to a repository
 
-We'll go through a short example of making changes to the r-bootcamp-2015 repository. In this case you don't have permission to make changes so you'll just have to follow along as I do it. However, you could start your own repository and then you'd be able to do similar things.
+We'll go through a short example of making changes to the r-bootcamp-2016 repository. In this case you don't have permission to make changes so you'll just have to follow along as I do it. However, you could start your own repository and then you'd be able to do similar things.
 
 Note that there are [graphical interfaces to Git](http://git-scm.com/downloads/guis) that you might want to check out, but here I'm just going to do it from the command line on my Mac.
 
@@ -312,11 +321,11 @@ You also want to include a short, focused, [reproducible](http://adv-r.had.co.nz
 
 ### Using the ideas
 
-3) Put the data/cpds.csv file in some other directory on your computer (or the VM if using the VM), such as *Downloads*. Use `setwd()` to set your working directory to be that directory. Read the file in using `read.csv()`.  Now use `setwd()` to point to a different directory such as *Desktop*. Write the data frame out to a file without any row names and without quotes on the character strings.
+3) Put the *data/cpds.csv* file in some other directory on your computer, such as *Downloads*. Use `setwd()` to set your working directory to be that directory. Read the file in using `read.csv()`.  Now use `setwd()` to point to a different directory such as *Desktop*. Write the data frame out to a file without any row names and without quotes on the character strings.
 
 4) Make a plot with the airline data. Save it as a PDF in *Desktop*. Now see what happens if you set the *width* and *height* arguments to be very small and see how it affects the resulting PDF. Do the same but setting width and height to be very large.
 
-5) Figure out where (what directory) the *graphics* package is stored on your machine. Is is the same as where the *fields* package is stored?
+5) Figure out where (what directory) the *graphics* package is stored on your machine. Is it the same as where the *fields* package is stored?
 
 ### Advanced
 

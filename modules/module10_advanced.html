@@ -295,24 +295,30 @@ mod2$residuals[1:20] # access field with list-like syntax
 </code></pre>
 
 <pre><code>##  [1] predict.ar*                predict.Arima*            
-##  [3] predict.arima0*            predict.bs*               
-##  [5] predict.bSpline*           predict.glm               
-##  [7] predict.glmmPQL*           predict.gls*              
-##  [9] predict.gnls*              predict.HoltWinters*      
-## [11] predict.lda*               predict.lm                
-## [13] predict.lme*               predict.lmList*           
-## [15] predict.loess*             predict.lqs*              
-## [17] predict.mca*               predict.merMod*           
-## [19] predict.mlm*               predict.nbSpline*         
-## [21] predict.nlme*              predict.nls*              
-## [23] predict.npolySpline*       predict.ns*               
-## [25] predict.pbSpline*          predict.polr*             
-## [27] predict.poly*              predict.polySpline*       
-## [29] predict.ppolySpline*       predict.ppr*              
-## [31] predict.prcomp*            predict.princomp*         
-## [33] predict.qda*               predict.rlm*              
-## [35] predict.smooth.spline*     predict.smooth.spline.fit*
-## [37] predict.StructTS*         
+##  [3] predict.arima0*            predict.bam               
+##  [5] predict.bs*                predict.bSpline*          
+##  [7] predict.fastTps            predict.gam               
+##  [9] predict.glm                predict.glmmPQL*          
+## [11] predict.gls*               predict.gnls*             
+## [13] predict.HoltWinters*       predict.interp.surface    
+## [15] predict.jam*               predict.Krig              
+## [17] predict.lda*               predict.lm                
+## [19] predict.lme*               predict.lmList*           
+## [21] predict.loess*             predict.lqs*              
+## [23] predict.mca*               predict.merMod*           
+## [25] predict.mKrig              predict.mlm*              
+## [27] predict.nbSpline*          predict.nlme*             
+## [29] predict.nls*               predict.npolySpline*      
+## [31] predict.ns*                predict.pbSpline*         
+## [33] predict.polr*              predict.poly*             
+## [35] predict.polySpline*        predict.ppolySpline*      
+## [37] predict.ppr*               predict.prcomp*           
+## [39] predict.princomp*          predict.qda*              
+## [41] predict.qsreg              predict.rlm*              
+## [43] predict.smooth.spline*     predict.smooth.spline.fit*
+## [45] predict.sreg               predict.StructTS*         
+## [47] predict.surface            predict.surface.default   
+## [49] predict.Tps               
 ## see &#39;?methods&#39; for accessing help and source code
 </code></pre>
 
@@ -321,7 +327,7 @@ mod2$residuals[1:20] # access field with list-like syntax
 
 <pre><code>## function (object, ...) 
 ## UseMethod(&quot;predict&quot;)
-## &lt;bytecode: 0x1a85208&gt;
+## &lt;bytecode: 0x100f2d28&gt;
 ## &lt;environment: namespace:stats&gt;
 </code></pre>
 
@@ -334,11 +340,11 @@ mod2$residuals[1:20] # access field with list-like syntax
 
 <p>Making an object and class-specific methods under S3 is simple. </p>
 
-<pre><code class="r">rboot2015 &lt;- list(month = &#39;August&#39;, year = 2015, 
+<pre><code class="r">rboot2016 &lt;- list(month = &#39;August&#39;, year = 2015, 
   instructor = &#39;Paciorek&#39;, attendance = 100)
-class(rboot2015) &lt;- &quot;workshop&quot;
+class(rboot2016) &lt;- &quot;workshop&quot;
 
-rboot2015
+rboot2016
 </code></pre>
 
 <pre><code>## $month
@@ -357,13 +363,13 @@ rboot2015
 ## [1] &quot;workshop&quot;
 </code></pre>
 
-<pre><code class="r">is(rboot2015, &quot;workshop&quot;)
+<pre><code class="r">is(rboot2016, &quot;workshop&quot;)
 </code></pre>
 
 <pre><code>## [1] TRUE
 </code></pre>
 
-<pre><code class="r">rboot2015$instructor 
+<pre><code class="r">rboot2016$instructor 
 </code></pre>
 
 <pre><code>## [1] &quot;Paciorek&quot;
@@ -376,7 +382,7 @@ rboot2015
 }
 
 # doesn&#39;t execute correctly in the slide creation, so comment out here:
-# rboot2015 
+# rboot2016 
 </code></pre>
 
 <p>Note that we rely on the generic <code>print()</code> already existing in R. Otherwise we&#39;d need to create it.</p>
@@ -560,7 +566,8 @@ for(curDest in Dests) {
             cat(&quot;Fitting model for destination &quot;, curDest, &quot;.\n&quot;)
             tmp &lt;- subset(sub, Dest == curDest)
             curMod &lt;- try(lm(DepDelay ~ Year + Month, data = tmp))
-            if(is(tmp, &quot;try-error&quot;)) mod[[curDest]] &lt;- NA else mod[[curDest]] &lt;- curMod            
+            if(is(tmp, &quot;try-error&quot;)) mod[[curDest]] &lt;- NA 
+                       else mod[[curDest]] &lt;- curMod            
 }
 </code></pre>
 
@@ -819,7 +826,7 @@ There is a UNIX utility call <em>mac2unix</em> that can convert such text files.
 
 <p>The Current Index to Statistics contains records of article and author information from most Statistics journals. </p>
 
-<p>The database is not freely available, so it&#39;s not on the course bSpace or Github, but I can do a demo here. (This may not process correctly when producing these slides&hellip;)</p>
+<p>The database is not freely available, so it&#39;s not on Github, but I can do a demo here. (This may not process correctly when producing these slides&hellip;)</p>
 
 <pre><code class="r">library(RSQLite)  # DBI is a dependency
 db &lt;- dbConnect(SQLite(), dbname = &quot;../data/cis.db&quot;) 
@@ -969,8 +976,12 @@ require(parallel)
 </code></pre>
 
 <pre><code>## Loading required package: doParallel
-## Loading required package: foreach
-## Loading required package: iterators
+</code></pre>
+
+<pre><code>## Loading required package: foreach
+</code></pre>
+
+<pre><code>## Loading required package: iterators
 </code></pre>
 
 <pre><code class="r">require(foreach)
@@ -1079,6 +1090,8 @@ cluster
 
 <pre><code class="r"># you may need to load all required libraries within
 # the function being applied
+# note this produces an error when run during creation of this HTML,
+# but should be fine in a standard R session
 clusterExport(cluster, &#39;air&#39;)
 </code></pre>
 
@@ -1160,73 +1173,15 @@ out[1:5]
 <pre><code class="r">require(parallel)
 nCores &lt;- 4
 out2 &lt;- mclapply(unique(air$Dest), fitFun, mc.cores = nCores)
-out2[1:5]
 </code></pre>
 
-<pre><code>## [[1]]
-## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## DepDelay ~ Year + s(Month) + s(Hour) + as.factor(DayOfWeek)
-## 
-## Estimated degrees of freedom:
-## 7.51 7.49  total = 23 
-## 
-## GCV score: 1051.858     
-## 
-## [[2]]
-## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## DepDelay ~ Year + s(Month) + s(Hour) + as.factor(DayOfWeek)
-## 
-## Estimated degrees of freedom:
-## 7.46 8.64  total = 24.1 
-## 
-## GCV score: 1325.755     
-## 
-## [[3]]
-## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## DepDelay ~ Year + s(Month) + s(Hour) + as.factor(DayOfWeek)
-## 
-## Estimated degrees of freedom:
-## 5.93 8.70  total = 22.63 
-## 
-## GCV score: 639.5956     
-## 
-## [[4]]
-## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## DepDelay ~ Year + s(Month) + s(Hour) + as.factor(DayOfWeek)
-## 
-## Estimated degrees of freedom:
-## 7.84 8.51  total = 24.35 
-## 
-## GCV score: 880.4363     
-## 
-## [[5]]
-## 
-## Family: gaussian 
-## Link function: identity 
-## 
-## Formula:
-## DepDelay ~ Year + s(Month) + s(Hour) + as.factor(DayOfWeek)
-## 
-## Estimated degrees of freedom:
-## 8.00 5.68  total = 21.69 
-## 
-## GCV score: 1367.66
+<pre><code>## Error in mcfork(): unable to fork, possible reason: Cannot allocate memory
+</code></pre>
+
+<pre><code class="r">out2[1:5]
+</code></pre>
+
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;out2&#39; not found
 </code></pre>
 
 <p>One thing to keep in mind is whether the different tasks all take about the same amount of time or widely different times. In the latter case, one wants to sequentially dispatch tasks as earlier tasks finish, rather than dispatching a block of tasks to each core. Some of these parallel <em>apply</em> variants allow you to control this. </p>
@@ -1268,18 +1223,19 @@ rnorm(5)
 <li><p>The ugly but good: Generate all your random numbers in the master process and distribute them to the tasks if feasible.</p></li>
 </ul>
 
-<p>The syntax for using L&#39;Ecuyer is available in <a href="http://www.stat.berkeley.edu/scf/paciorek-parallelWorkshop.pdf">my parallel computing workshop notes</a>.</p>
+<p>The syntax for using L&#39;Ecuyer is available in my <a href="https://github.com/berkeley-scf/tutorial-parallel-basics">parallel computing tutorial</a>.</p>
 
 <h1>A brief note on distributed computing for advanced users</h1>
 
-<p>If you have access to multiple machines within a networked environment, such as the compute servers in the Statistics Department or the campus-wide Savio cluster or machines on Amazon&#39;s EC2 service, there are a couple straightforward ways to parallelize EP jobs across machines.</p>
+<p>If you have access to multiple machines within a networked environment, such as the compute servers in the Statistics Department or the campus-wide Savio cluster or machines on Amazon&#39;s EC2 service, there are a few (sometimes) straightforward ways to parallelize EP jobs across machines.</p>
 
 <ol>
-<li>Use <code>foreach</code> with <em>doMPI</em> as the back-end. You&#39;ll need <em>MPI</em> and <em>Rmpi</em> installed on all machines. </li>
+<li>Use <code>foreach</code> with <em>doMPI</em> as the back-end. You&#39;ll need <em>MPI</em> and <em>Rmpi</em> installed on all machines.</li>
+<li>Use <code>foreach</code> with <em>doSNOW</em> as the backend and start a cluster of type &ldquo;SOCK&rdquo; to avoid needing MPI/Rmpi. </li>
 <li>Use sockets to make a cluster in R and then use <code>parLapply()</code>, <code>parSapply()</code>, <code>mclapply()</code>, etc.</li>
 </ol>
 
-<p>See my <a href="http://www.stat.berkeley.edu/scf/paciorek-distribComp.pdf">notes on distributed computing</a> for syntax and more details. </p>
+<p>See my <a href="https://github.com/berkeley-scf/tutorial-parallel-distributed">tutorial on distributed computing</a> for syntax and more details. </p>
 
 </body>
 

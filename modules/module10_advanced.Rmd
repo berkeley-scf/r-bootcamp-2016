@@ -1,5 +1,5 @@
 % R bootcamp, Module 10: Advanced topics
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Paciorek
 
 ```{r chunksetup, include=FALSE} 
@@ -63,13 +63,13 @@ When `predict()` is called on a GLM object, it first calls the generic `predict(
 Making an object and class-specific methods under S3 is simple. 
 
 ```{r}
-rboot2015 <- list(month = 'August', year = 2015, 
+rboot2016 <- list(month = 'August', year = 2015, 
   instructor = 'Paciorek', attendance = 100)
-class(rboot2015) <- "workshop"
+class(rboot2016) <- "workshop"
 
-rboot2015
-is(rboot2015, "workshop")
-rboot2015$instructor 
+rboot2016
+is(rboot2016, "workshop")
+rboot2016$instructor 
 
 print.workshop <- function(x) {
     with(x,
@@ -78,7 +78,7 @@ print.workshop <- function(x) {
 }
 
 # doesn't execute correctly in the slide creation, so comment out here:
-# rboot2015 
+# rboot2016 
 ```
  
 Note that we rely on the generic `print()` already existing in R. Otherwise we'd need to create it.
@@ -191,7 +191,8 @@ for(curDest in Dests) {
             cat("Fitting model for destination ", curDest, ".\n")
             tmp <- subset(sub, Dest == curDest)
             curMod <- try(lm(DepDelay ~ Year + Month, data = tmp))
-            if(is(tmp, "try-error")) mod[[curDest]] <- NA else mod[[curDest]] <- curMod            
+            if(is(tmp, "try-error")) mod[[curDest]] <- NA 
+                       else mod[[curDest]] <- curMod            
 }
 
 mod[[1]]
@@ -335,7 +336,7 @@ Basically, you tell the package what DBMS is being used on the back-end, link to
 
 The Current Index to Statistics contains records of article and author information from most Statistics journals. 
 
-The database is not freely available, so it's not on the course bSpace or Github, but I can do a demo here. (This may not process correctly when producing these slides...)
+The database is not freely available, so it's not on Github, but I can do a demo here. (This may not process correctly when producing these slides...)
 
 ```{r}
 library(RSQLite)  # DBI is a dependency
@@ -481,6 +482,8 @@ cluster
 
 # you may need to load all required libraries within
 # the function being applied
+# note this produces an error when run during creation of this HTML,
+# but should be fine in a standard R session
 clusterExport(cluster, 'air')
 out <- parLapply(cluster, unique(air$Dest), fitFun)
 out[1:5]
@@ -520,14 +523,15 @@ rnorm(5)
 
 * The ugly but good: Generate all your random numbers in the master process and distribute them to the tasks if feasible.
 
-The syntax for using L'Ecuyer is available in [my parallel computing workshop notes](http://www.stat.berkeley.edu/scf/paciorek-parallelWorkshop.pdf).
+The syntax for using L'Ecuyer is available in my [parallel computing tutorial](https://github.com/berkeley-scf/tutorial-parallel-basics).
 
 # A brief note on distributed computing for advanced users
 
-If you have access to multiple machines within a networked environment, such as the compute servers in the Statistics Department or the campus-wide Savio cluster or machines on Amazon's EC2 service, there are a couple straightforward ways to parallelize EP jobs across machines.
+If you have access to multiple machines within a networked environment, such as the compute servers in the Statistics Department or the campus-wide Savio cluster or machines on Amazon's EC2 service, there are a few (sometimes) straightforward ways to parallelize EP jobs across machines.
 
-1. Use `foreach` with *doMPI* as the back-end. You'll need *MPI* and *Rmpi* installed on all machines. 
-2. Use sockets to make a cluster in R and then use `parLapply()`, `parSapply()`, `mclapply()`, etc.
+1. Use `foreach` with *doMPI* as the back-end. You'll need *MPI* and *Rmpi* installed on all machines.
+2. Use `foreach` with *doSNOW* as the backend and start a cluster of type "SOCK" to avoid needing MPI/Rmpi. 
+3. Use sockets to make a cluster in R and then use `parLapply()`, `parSapply()`, `mclapply()`, etc.
 
-See my [notes on distributed computing](http://www.stat.berkeley.edu/scf/paciorek-distribComp.pdf) for syntax and more details. 
+See my [tutorial on distributed computing](https://github.com/berkeley-scf/tutorial-parallel-distributed) for syntax and more details. 
 

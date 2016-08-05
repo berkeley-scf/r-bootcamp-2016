@@ -1,5 +1,5 @@
 % R bootcamp, Breakout Solutions
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Paciorek
 
 ```{r chunksetup, include=FALSE, cache=TRUE} 

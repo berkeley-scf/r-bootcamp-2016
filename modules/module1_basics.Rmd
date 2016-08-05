@@ -1,5 +1,5 @@
 % R bootcamp, Module 1: Basics
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Paciorek
 
 ```{r chunksetup, include=FALSE, cache=TRUE} 
@@ -200,7 +200,7 @@ median(delay, na.rm = TRUE)
 ```
 
 * We can embed function calls: 
-```{r, hist}
+```{r, hist, fig.cap = ""}
 hist(rnorm(1000))
 ```
 
@@ -355,7 +355,7 @@ R has several different plotting systems:
 
 We'll see a little bit of *base* graphics here and then *lattice* and *ggplot2* tomorrow in Module 8.
 
-```{r basic_plots}
+```{r basic_plots, fig.cap =""}
 hist(air$DepDelay)
 # make a random subset for quicker plotting:
 set.seed(0)  # make the subset reproducible
@@ -370,7 +370,7 @@ boxplot(subset$DepDelay ~ subset$UniqueCarrier)
 # Graphics options
 
 Check out `help(par)` for various [graphics settings](http://xkcd.com/833/); these are set via `par()` or within the specific graphics command (some can be set in either place), e.g.,
-```{r, parstuff}
+```{r, parstuff, fig.cap = ""}
 par(pch = 2)
 plot(subset$DepDelay ~ subset$Distance, xlab = 'distance (miles)', 
    ylab = 'delay (minutes)', log = 'x')
@@ -411,4 +411,4 @@ summ <- summary(mod)
 
 9) For flights to ORD and IAH, plot departure delay against time in days where day 1 is Jan 1 2005 and the last day is Dec 31 2008. As above, use different colors for the two different destinations.
 
-10) Now modify the size of the points. Add a legend. Rotate the numbers on the y-axis so they are printed horizontally. Recall that help(par) will provide a lot of information.
+10) Now modify the size of the points. Add a legend. Rotate the numbers on the y-axis so they are printed horizontally. Recall that `help(par)` will provide a lot of information.

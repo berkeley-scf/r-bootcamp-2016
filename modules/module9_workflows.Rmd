@@ -1,5 +1,5 @@
 % R bootcamp, Module 9: Workflows, managing projects and good practices
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Paciorek
 
 ```{r chunksetup, include=FALSE} 
@@ -267,8 +267,8 @@ help file for any standard R function for how this is done in that context).
 
 # Good coding practices: syntax
 
-For an example that demonstrates some of these ideas, see *goodCode.R*.
-And for a counterexample, see *badCode.R*.
+For an example that demonstrates some of these ideas, see [goodCode.R](goodCode.R).
+And for a counterexample, see [badCode.R](badCode.R).
 
   - Header information: put metainfo on the code into the first few lines
 of the file as comments. Include who, when, what, how the code fits
@@ -320,7 +320,7 @@ complete set of instructions which generated the figures.
 Here are some useful articles talking about reproducibility.
 
 - [Wilson et at., Best practices for scientific computing, ArXiv:1210:0530](http://arxiv.org/abs/1210.0530)
-- [Gentzkow and Shapiro tutorial for social scientists](faculty.chicagobooth.edu/jesse.shapiro/research/CodeAndData.pdf)
+- [Gentzkow and Shapiro tutorial for social scientists](https://web.stanford.edu/~gentzkow/research/CodeAndData.pdf)
 
 
 # Some ideas for improving reproducibility
@@ -341,4 +341,4 @@ Here are some useful articles talking about reproducibility.
 
 Please fill out the feedback survey.
 
-http://bit.ly/rbootcamp2015
+[http://bit.ly/rbootcamp2016](http://bit.ly/rbootcamp2016)

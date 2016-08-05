@@ -1,5 +1,5 @@
 % R bootcamp, Module 3: Working with objects and data
-% August 2015, UC Berkeley
+% August 2016, UC Berkeley
 % Chris Paciorek
 
 ```{r chunksetup, include=FALSE} 
@@ -62,7 +62,7 @@ is.matrix(mat)
 
 # Matrices are stored column-major
 
-This is like Fortran but not like C. 
+This is like Fortran, MATLAB and Julia but not like C or Python(numpy). 
 
 ```{r}
 mat <- matrix(1:12, 3, 4)
@@ -83,7 +83,7 @@ This is a common cause of bugs!
 Since it was designed by statisticians, R handles missing values very well relative to other languages.
 
 * `NA` is a missing value
-```{r}
+```{r, fig.cap = ""}
 vec <- rnorm(12)
 vec[c(3, 5)] <- NA
 vec
@@ -205,7 +205,7 @@ summary(air$Dest)
 - This is a useful shortcut when we want to preserve some of the meaning provided by the order
 - Think ordinal data
 
-```{r orderedfac}
+```{r orderedfac, fig.cap = ""}
 # first let's do some pre-processing to get set up for the example
 air$DepDelayCens <- air$DepDelay
 air$DepDelayCens[air$DepDelayCens > 60] <- 60
@@ -238,7 +238,7 @@ levels(students)
 unclass(students)
 ```
 
-- What's wrong?
+- Hmmm, what happened?
 - Be careful! The best way to convert a factor is to convert it to a character first.
 
 ```{r}
@@ -298,6 +298,7 @@ mat[c('a', 'd', 'a'), ]
 subset(air, DepDelay > 60*12)
 ```
 
+5) using *dplyr* tools such as *filter()* and *select()* -- more in Module 5
 
 # Assignment into subsets
 
@@ -378,8 +379,10 @@ It's good to first look at your data in plain text format outside of R and then 
 
 The *read.table()* family of functions just skims the surface of things...
 
-1) You can also read in a file as vector of characters, one character string per line of the file with `readLines()`, and then post-process it. 
-2) You can read fixed width format (constant number of characters per field) with `read.fwf()`.
+1) You can also read in a file as vector of characters, one character string per line of the file with *readLines()*, and then post-process it. 
+2) You can read fixed width format (constant number of characters per field) with *read.fwf()*.
+3) *read_csv()* (and *read_lines()*, *read_fwf()*, etc.) in the *readr* package is a faster, more helpful drop-in replacement for *read.csv()* that plays well with *dplyr* (see Module 5).
+4) the *data.table* package is great for reading and manipulating large datasets (orders of gigabytes or 10s of gigabytes).
 
 
 # Breakout
