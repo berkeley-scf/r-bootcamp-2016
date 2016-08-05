@@ -180,6 +180,11 @@ densityplot(~Gold, medal_counts_wide, main = "Gold Medal Counts")
 barchart(count~Year, data = usa_gold_medals, width = 4, main = "USA Gold Medals", horizontal = FALSE)
 ```
 
+## Pros/cons  
+* lattice tends to focus on a particular type of graph and how to represent cross-sectional variation by splitting it up into smaller chunks
+* Becoming a proficient user of lattice requires learning a huge array of graph-specific formulas and options
+
+
 # Basic usage: ggplot2
 
 The general call for ggplot2 graphics looks something like this:
@@ -196,8 +201,80 @@ Note that ggplot2 graphs in layers in a *continuing call* (hence the endless +..
 You can see the layering effect by comparing the same graph with different colors for each layer
 
 ```{r, fig.cap=" ", warning=FALSE}
-ggplot(data=data, aes(x=year, y=realgdpgr)) + geom_point(color="black") + geom_point(aes(x=year, y=unemp), color="red")
-ggplot(data=data, aes(x=year, y=realgdpgr)) + geom_point(color="red") + geom_point(aes(x=year, y=unemp), color="black")
+p <- ggplot(data=medal_counts_wide, aes(x=Year, y=Gold)) + geom_point(color="gold")
+p
+p + geom_point(aes(x=Year, y=Silver), color="gray") + ylab("Medals")
+```
+
+## Grammar of Graphics
+
+ggplot2 syntax is very different from base graphics and lattice. It's built on the **grammar of graphics**.
+The basic idea is that the visualization of all data requires four items:
+
+1) One or more **statistics** conveying information about the data (identities, means, medians, etc.)
+
+2) A **coordinate system** that differentiates between the intersections of statistics (at most two for ggplot, three for lattice)
+
+3) **Geometries** that differentiate between off-coordinate variation in *kind*
+  
+4) **Scales** that differentiate between off-coordinate variation in *degree*
+  
+ggplot2 allows the user to manipulate all four of these items.
+
+
+## Anatomy of aes()
+
+```{r, eval=FALSE}
+ggplot(data=, aes(x=, y=, color=, linetype=, shape=, size=))
+```
+
+ggplot2 is optimized for showing variation on all four aesthetic types
+
+```{r, fig.cap=" ", warning=FALSE}
+# Differences in kind using color
+pigs.data <- data[data$country %in% c("Greece", "Portugal", "Ireland", "Spain"),]
+ggplot(data=pigs.data, aes(x=year, y=outlays)) + geom_line(aes(color=country))
+
+usa_all_medals <- medal_counts %>% filter(Country == "United States")
+ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_line(aes(color = Medal))
+```
+
+Note what happens when we specify the color parameter outside of the aesthetic operator. ggplot2 views these specifications as invalid graphical parameters. 
+
+```{r, fig.cap=" ", warning=FALSE, error = TRUE}
+ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_line(color = Medal)
+ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_line(color = "Medal")
+ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_line(color = "red")
+```
+
+## ggplot2 and tidy data
+
+* Base graphics/lattice and ggplot2 have one big difference: ggplot2 **requires** your data to be in tidy format. For base graphics, it can actually be helpful *not* to have your data in tidy format. Compare:
+
+```{r}
+usa_all_medals_untidy <- medal_counts_wide %>% filter(Country == "United States") # Medal is the variable, but it spans multiple columns
+
+# Base graphics call
+plot(usa_all_medals_untidy$Year, usa_all_medals_untidy$Gold, col = "green", type = "l")
+lines(usa_all_medals_untidy$Year, usa_all_medals_untidy$Silver, col = "blue")
+lines(usa_all_medals_untidy$Year, usa_all_medals_untidy$Bronze, col = "red")
+legend("right", legend = c("Gold", "Silver", "Bronze"), fill = c("green", "blue", "red"))
+
+# ggplot2 call
+ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_line(aes(color = Medal))
+```
+
+* The difference is that ggplot treats `Medal` as an aesthetic parameter that differentiates kinds of statistics. Base graphics treats each medal type as a layer to the plot.
+* ggplot2 plays nice with dplyr and pipes. If you want to manipulate your data specifically for one plot but not save the new dataset, you can call your dplyr chain and pipe it directly into a ggplot call:
+
+```{r}
+ggplot(usa_gold_medals, aes(x = Year, y = count)) + geom_line()
+
+# This combines the subsetting and plotting into one step
+medal_counts %>% 
+  filter(Medal == "Gold") %>%
+  filter(Country == "United States") %>%
+  ggplot(aes(x = Year, y = count)) + geom_line()
 ```
 
 # Comparing lattice and ggplot
@@ -215,77 +292,77 @@ ggplot(data=data, aes(x=year, y=realgdpgr)) + geom_point(color="red") + geom_poi
 
 # lattice v. ggplot2: Densities
 
-```{r, fig.cap=" ", warning=FALSE}
-ggplot(data=data, aes(x=vturn)) + geom_density() # ggplot2
-densityplot(~vturn, data=data) # lattice
+```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
+ggplot(data = usa_gold_medals, aes(x = count)) + geom_density() # ggplot2
+densityplot(~count, data = usa_gold_medals) # lattice
 ```
 
 # lattice v. ggplot2: X-Y scatter plots
 
-```{r, fig.cap=" ", warning=FALSE}
-ggplot(data=data, aes(x=year, y=outlays)) + geom_point() # ggplot2
-xyplot(outlays~year, data=data) # lattice
+```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_point() # ggplot2
+xyplot(count~Year, data = usa_gold_medals) # lattice
 ```
 
 # lattice v. ggplot2: X-Y line plots
 
-```{r, fig.cap=" ", warning=FALSE}
-ggplot(data=data[data$country=="USA",], aes(x=year, y=outlays)) + geom_line() # ggplot2 
-xyplot(outlays~year, data=data[data$country=="USA",], type="l") # lattice
+```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_line() # ggplot2
+xyplot(count~Year, data = usa_gold_medals, type = "l") # lattice
 ```
 
 # lattice v. ggplot2: bar plots 
-```{r, fig.cap=" ", warning=FALSE, message=FALSE}
-# Create data.frame of average growth rates by country over time
-growth <- ddply(.data=data, .variables=.(country), summarize, mean=mean(realgdpgr, na.rm=T))
+```{r, fig.cap=" ", warning=FALSE, message=FALSE, fig.show = "hold"}
+# Create a dataframe of median number of gold medals by country
+median_gold_medals <- medal_counts %>% 
+  filter(Medal == "Gold") %>% 
+  group_by(Country) %>%
+  summarise(med = median(count))
 
-ggplot(data=growth, aes(x=country, y=mean)) + geom_bar(stat="identity") # ggplot2
-barchart(mean~country, data=growth) # lattice
+ggplot(data = median_gold_medals[1:15, ], aes(x = Country, y = med)) + geom_bar(stat="identity") # ggplot2
+barchart(med~Country, data = median_gold_medals[1:15, ]) # lattice
 ```
 
 # lattice v. ggplot2: box plots 
-```{r, fig.cap=" ", warning=FALSE}
-ggplot(data=data, aes(x=country, y=outlays)) + geom_boxplot() # ggplot2
-bwplot(outlays~country, data=data) # lattice
+```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
+# Notice that here, you must explicitly convert numeric years to factors
+ggplot(data = medal_counts_wide, aes(x = factor(Year), y = Gold)) + geom_boxplot() # ggplot2
+bwplot(Gold~factor(Year), data = medal_counts_wide, horizontal = FALSE) # lattice
 ```
 
 # lattice v. ggplot2: "trellis" plots 
-```{r, fig.cap=" ", warning=FALSE}
-ggplot(data=data, aes(x=year, y=outlays)) + geom_point() + facet_wrap(~country) # ggplot2
-xyplot(outlays~year|country, data=data) # lattice
+```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
+# Subset the data to North America countries for easier viewing
+northern_hem <- medal_counts_wide %>% filter(Country %in% c("United States", "Canada", "Cuba", "Mexico"))
+
+ggplot(data = northern_hem, aes(x = Year, y = Gold)) + geom_point() + facet_wrap(~Country) # ggplot2
+xyplot(Gold~Year|Country, data = northern_hem) # lattice
 ```
 
 # lattice v. ggplot2: countour plots
-```{r, fig.cap=" ", warning=FALSE}
+```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
 data(volcano) # Load volcano contour data
 volcano[1:10, 1:10] # Examine volcano dataset (first 10 rows and columns)
-volcano3d <- melt(volcano) # Use reshape2 package to melt the data
+volcano3d <- melt(volcano) # Use reshape2 package to melt the data into tidy form
 head(volcano3d) # Examine volcano3d dataset (head)
 names(volcano3d) <- c("xvar", "yvar", "zvar") # Rename volcano3d columns
 
-ggplot(data=volcano3d, aes(x=xvar, y=yvar, z = zvar)) + geom_contour() # ggplot2
-contourplot(zvar~xvar + yvar, data=volcano3d) # lattice
+ggplot(data = volcano3d, aes(x = xvar, y = yvar, z = zvar)) + geom_contour() # ggplot2
+contourplot(zvar~xvar + yvar, data = volcano3d) # lattice
 ```
 
 # lattice v. ggplot2: tile/image/level plots
-```{r, fig.cap=" ", warning=FALSE}
-ggplot(data=volcano3d, aes(x=xvar, y=yvar, z = zvar)) + geom_tile(aes(fill=zvar)) # ggplot2
-levelplot(zvar~xvar + yvar, data=volcano3d) # lattice
+```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
+ggplot(data = volcano3d, aes(x = xvar, y = yvar, z = zvar)) + geom_tile(aes(fill = zvar)) # ggplot2
+levelplot(zvar~xvar + yvar, data = volcano3d) # lattice
 ```
 
 # lattice: 3D plots
 ```{r, fig.cap=" ", warning=FALSE}
 # Create a subset of the dataset containing only data for France
-france.data <- data[data$country=="France",]
-cloud(outlays~year*realgdpgr, data=france.data)
-# Create a subset of the dataset containing only data for Greece, Portugal, Ireland, and Spain
-pigs.data <- data[data$country %in% c("Greece", "Portugal", "Ireland", "Spain"),]
-cloud(outlays~year*realgdpgr|country, data=pigs.data)
-```
+cloud(Gold~Bronze*Silver, data = northern_hem)
 
-# ggplot2: Panel plots
-```{r, fig.cap=" ", warning=FALSE}
-ggplot(data=pigs.data, aes(x=year, y=realgdpgr, color=country)) + geom_line()
+cloud(Gold~Bronze*Silver|Country, data = northern_hem)
 ```
 
 # lattice v. ggplot2: options [labeling]
@@ -361,50 +438,6 @@ xyplot(outlays~year, data=data[data$country=="USA",], type="l", lty=3, lwd=3) # 
 xyplot(outlays~year, data=data[data$country=="USA",], type="l", lty=3, lwd=4) # lattice
 ```
 
-# ggplot2 and the Grammar of Graphics
-
-- By now, you might be noticing some trends in how these two packages approach graphics
-
-- lattice tends to focus on a particular type of graph and how to represent cross-sectional variation by splitting it up into smaller chunks
-
-- Becoming a proficient user of lattice requires learning a huge array of graph-specific formulas and options
-
-- ggplot2 tries to represent much more of the cross-sectional variation by making use of various "aesthetics"; general approach is based on *The Grammar of Graphics*
-  
-# ggplot2 and the Grammar of Graphics
-  
-  - Basic idea is that the visualization of all data requires four items
-
-1) One or more **statistics** conveying information about the data (identities, means, medians, etc.)
-
-2) A **coordinate system** that differentiates between the intersections of statistics (at most two for ggplot, three for lattice)
-
-3) **Geometries** that differentiate between off-coordinate variation in *kind*
-  
-  4) **Scales** that differentiate between off-coordinate variation in *degree*
-  
-  - ggplot2 allows the user to manipulate all four of these items
-
-# Anatomy of aes()
-
-```{r, eval=FALSE}
-ggplot(data=, aes(x=, y=, color=, linetype=, shape=, size=))
-```
-
-ggplot2 is optimized for showing variation on all four aesthetic types
-
-```{r, fig.cap=" ", warning=FALSE}
-# Differences in kind using color
-ggplot(data=pigs.data, aes(x=year, y=outlays)) + geom_line(aes(color=country))
-```
-
-Note what happens when we specify the color parameter outside of the aesthetic operator. ggplot2 views these specifications as invalid graphical parameters. 
-
-```{r, fig.cap=" ", warning=FALSE, eval=FALSE}
-ggplot(data=pigs.data, aes(x=year, y=outlays)) + geom_line(color=country)
-ggplot(data=pigs.data, aes(x=year, y=outlays)) + geom_line(color="country")
-ggplot(data=pigs.data, aes(x=year, y=outlays)) + geom_line(color="red")
-```
 
 ```{r, fig.cap=" ", warning=FALSE}
 # Differences in kind using line types
