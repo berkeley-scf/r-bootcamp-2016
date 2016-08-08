@@ -244,54 +244,40 @@ hist(air$DayMinutes)
 library(plyr)
 
 ## 1 ##
-ddply(air, .variables = .(Dest), .fun = summarize, medianDelay = median(DepDelay, na.rm = TRUE))
+gap_median_lifeExp <- gapminder %>%
+    group_by(continent) %>%
+    summarize(med_lifeExp = median(lifeExp))
 
 ## 2 ## 
-ddply(air, .variables = .(Dest, Month), .fun = summarize, perc95 = quantile(DepDelay, probs = 0.95, na.rm = TRUE))
-```
+gapminder_pop_continent <- gapminder %>%
+    group_by(continent, year) %>%
+    mutate(continent_pop = sum(pop))
 
-```{r, using_the_ideas5}
 ## 3 ##
-air2 <- ddply(air, .variables = .(Dest), .fun = transform, numFlights = length(Dest))
+gap_rel_gdp <- gapminder %>%
+    group_by(continent, year) %>%
+    mutate(gdpPercap_diff = gdpPercap - mean(gdpPercap)) %>%
+    ungroup() %>%
+    arrange(desc(gdpPercap_diff))
 
 ## 4 ##
-air2 <- ddply(air, .variables = .(Dest), .fun = transform, Hour = CRSDepTime %/% 100)
-table(air2$Hour)
+gap_wider <- gap_rel_gdp %>% 
+  select(country, year, gdpPercap_diff) %>% 
+  spread(year, gdpPercap_diff)
 
 ## 5 ##
-library(reshape2)
-medianDelay <- ddply(air, .variables = .(Dest, Month), .fun = summarize, medianDelay = median(DepDelay, na.rm = TRUE))
-dcast(medianDelay, formula = Dest ~ Month, value.var = 'medianDelay')
+reg1 <- glm(formula = gdpPercap ~ lifeExp + pop + year, 
+                family=gaussian, data=gapminder)
+
+reg2 <- glm(formula = gdpPercap ~ lifeExp + pop + factor(year), 
+                family=gaussian, data=gapminder)
 
 ## 6 ## 
-air2$LongDelay <- air2$DepDelay >= 30
-mod <- glm(LongDelay ~ factor(Month) + factor(DayOfWeek) + factor(Hour), family = 'binomial', data = air2)
+gap_rel_gdp_sign <- gap_rel_gdp %>%
+  mutate(sign = ifelse(gdpPercap_diff > 0, 1, 0))
 
-## 7 ## 
-dests <- c("ORD", "SAN", "IAH", "SEA", "JFK")
-air2sub <- air2[air2$Dest %in% dests, ]
-glmmod <- function(df) glm(LongDelay ~ factor(Month) + factor(DayOfWeek) + factor(Hour), family = 'binomial', data = df)
-mods <- dlply(air2sub, .variables = .(Dest), .fun = glmmod)
-names(mods)
-summary(mods[[1]])
-```
-
-```{r, advanced5}
-## 8 ##
-air2 <- ddply(air, .variables = .(Dest), .fun = transform, Hour = CRSDepTime %/% 100, LongDelay = DepDelay >= 30)
-mod <- glm(LongDelay ~ factor(Month) + factor(DayOfWeek) + factor(Hour), family = 'binomial', data = air2)
-predict(mod, newdata = data.frame(Month = c(12, 4), DayOfWeek = c(5, 6), Hour = c(14, 14)), type = 'response')
-xbeta <- mod$coef["(Intercept)"] + mod$coef["factor(Month)12"] + mod$coef["factor(DayOfWeek)5"] + mod$coef["factor(Hour)14"]
-invlogit <- function(x) exp(x) / (1 + exp(x))
-invlogit(xbeta)
-
-air2sub <- air2[air2$Dest %in% dests, ]
-glmmod <- function(df) glm(LongDelay ~ factor(Month) + factor(DayOfWeek) + factor(Hour), family = 'binomial', data = df)
-mods <- dlply(air2sub, .variables = .(Dest), .fun = glmmod)
-singleMod <- glm(LongDelay ~ factor(Dest) + factor(Month) + factor(DayOfWeek) + factor(Hour), family = 'binomial', data = air2sub)
-
-predict(mod, newdata = data.frame(Dest = rep("ORD", 2), Month = c(12, 4), DayOfWeek = c(5, 6), Hour = c(14, 14)), type = 'response')
-predict(mods[["ORD"]], newdata = data.frame(Month = c(12, 4), DayOfWeek = c(5, 6), Hour = c(14, 14)), type = 'response')
+reg_logit <- glm(formula = sign ~ lifeExp + pop, 
+                family = binomial(link = "logit"), data = gap_rel_gdp_sign)
 ```
 
 # Module 6: Programming
