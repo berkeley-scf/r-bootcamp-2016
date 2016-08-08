@@ -229,14 +229,14 @@ system.time(trunc &lt;- ifelse(vals &gt; 0, vals, 0))
 </code></pre>
 
 <pre><code>##    user  system elapsed 
-##   0.141   0.004   0.145
+##   0.161   0.000   0.161
 </code></pre>
 
 <pre><code class="r">system.time(vals &lt;- vals * (vals &gt; 0))
 </code></pre>
 
 <pre><code>##    user  system elapsed 
-##   0.011   0.000   0.012
+##   0.010   0.000   0.011
 </code></pre>
 
 <p><strong>Question</strong>: What am I doing with <code>vals * (vals &gt; 0)</code> ? What happens behind the scenes in R?</p>
@@ -387,7 +387,7 @@ for(i in 1:n)
 </code></pre>
 
 <pre><code>##    user  system elapsed 
-##   2.760   0.028   2.787
+##   3.061   0.032   3.091
 </code></pre>
 
 <p>The same holds for using <code>rbind()</code>, <code>cbind()</code>, or adding to a list, one element at a time.</p>
@@ -403,7 +403,7 @@ for(i in 1:n)
 </code></pre>
 
 <pre><code>##    user  system elapsed 
-##   1.581   0.040   1.620
+##   2.002   0.048   2.049
 </code></pre>
 
 <p><strong>Question</strong>: Thoughts on why these are so slow? Think about what R might be doing behind the scenes</p>
@@ -422,7 +422,7 @@ for(i in 1:n)
 </code></pre>
 
 <pre><code>##    user  system elapsed 
-##   0.039   0.000   0.040
+##   0.040   0.008   0.048
 </code></pre>
 
 <p>Here&#39;s how to pre-allocate an empty list: </p>
@@ -474,19 +474,19 @@ lapply(myList, min)
 </code></pre>
 
 <pre><code>## [[1]]
-## [1] 0.3693766
+## [1] -1.905404
 ## 
 ## [[2]]
-## [1] -0.5237159
+## [1] 0.6732947
 ## 
 ## [[3]]
-## [1] -1.835753
+## [1] 0.1856627
 </code></pre>
 
 <pre><code class="r">sapply(myList, min)
 </code></pre>
 
-<pre><code>## [1]  0.3693766 -0.5237159 -1.8357529
+<pre><code>## [1] -1.9054035  0.6732947  0.1856627
 </code></pre>
 
 <p>Note that we don&#39;t generally want to use <code>apply()</code> on a data frame. </p>

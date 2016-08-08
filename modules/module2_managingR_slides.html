@@ -96,24 +96,23 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 <span class="kw">ls</span>()</code></pre>
 <pre><code>##  [1] &quot;a&quot;                &quot;D2R&quot;              &quot;deepExtract&quot;     
 ##  [4] &quot;denslines&quot;        &quot;densplot&quot;         &quot;dim2&quot;            
-##  [7] &quot;dmvt&quot;             &quot;ellipse.default&quot;  &quot;f.angdist&quot;       
-## [10] &quot;f.ciplot&quot;         &quot;f.dplot&quot;          &quot;f.ess&quot;           
-## [13] &quot;f.ess.old&quot;        &quot;f.flushplot&quot;      &quot;f.gm&quot;            
-## [16] &quot;f.grstat&quot;         &quot;f.identity&quot;       &quot;f.invlogit&quot;      
-## [19] &quot;f.logit&quot;          &quot;f.logmatern.euc&quot;  &quot;f.lonlat2eucl&quot;   
-## [22] &quot;f.matern.ang&quot;     &quot;f.matern.ang.cov&quot; &quot;f.matern.euc&quot;    
-## [25] &quot;f.merge&quot;          &quot;format_bytes&quot;     &quot;f.rdist.earth&quot;   
-## [28] &quot;f.sort&quot;           &quot;f.sort2&quot;          &quot;f.squexp&quot;        
-## [31] &quot;f.trimat&quot;         &quot;f.vecrep&quot;         &quot;getNcdf&quot;         
-## [34] &quot;im&quot;               &quot;indices&quot;          &quot;ls_sizes&quot;        
-## [37] &quot;machineName&quot;      &quot;makePoly&quot;         &quot;module&quot;          
-## [40] &quot;plot.ell&quot;         &quot;pmap&quot;             &quot;pmap2&quot;           
-## [43] &quot;pointsInPoly&quot;     &quot;pplot&quot;            &quot;pretty_size&quot;     
-## [46] &quot;print.closeR&quot;     &quot;q&quot;                &quot;R2&quot;              
-## [49] &quot;R2D&quot;              &quot;rcsv&quot;             &quot;rotate&quot;          
-## [52] &quot;sizes&quot;            &quot;source&quot;           &quot;temp.colors&quot;     
-## [55] &quot;thresh&quot;           &quot;tplot&quot;            &quot;tsplot&quot;          
-## [58] &quot;wcsv&quot;</code></pre>
+##  [7] &quot;ellipse.default&quot;  &quot;f.angdist&quot;        &quot;f.ciplot&quot;        
+## [10] &quot;f.dplot&quot;          &quot;f.ess&quot;            &quot;f.ess.old&quot;       
+## [13] &quot;f.flushplot&quot;      &quot;f.gm&quot;             &quot;f.grstat&quot;        
+## [16] &quot;f.identity&quot;       &quot;f.invlogit&quot;       &quot;f.logit&quot;         
+## [19] &quot;f.logmatern.euc&quot;  &quot;f.lonlat2eucl&quot;    &quot;f.matern.ang&quot;    
+## [22] &quot;f.matern.ang.cov&quot; &quot;f.matern.euc&quot;     &quot;f.merge&quot;         
+## [25] &quot;format_bytes&quot;     &quot;f.rdist.earth&quot;    &quot;f.sort&quot;          
+## [28] &quot;f.sort2&quot;          &quot;f.squexp&quot;         &quot;f.trimat&quot;        
+## [31] &quot;f.vecrep&quot;         &quot;getNcdf&quot;          &quot;im&quot;              
+## [34] &quot;indices&quot;          &quot;ls_sizes&quot;         &quot;machineName&quot;     
+## [37] &quot;makePoly&quot;         &quot;module&quot;           &quot;plot.ell&quot;        
+## [40] &quot;pmap&quot;             &quot;pmap2&quot;            &quot;pointsInPoly&quot;    
+## [43] &quot;pplot&quot;            &quot;pretty_size&quot;      &quot;print.closeR&quot;    
+## [46] &quot;q&quot;                &quot;R2&quot;               &quot;R2D&quot;             
+## [49] &quot;rcsv&quot;             &quot;rotate&quot;           &quot;sizes&quot;           
+## [52] &quot;source&quot;           &quot;temp.colors&quot;      &quot;thresh&quot;          
+## [55] &quot;tplot&quot;            &quot;tsplot&quot;           &quot;wcsv&quot;</code></pre>
 <p><strong>Challenge</strong>: how would I find all of my objects that have 'x' in their names?</p>
 </div>
 <div id="packages-rs-killer-app" class="slide section level1">
@@ -173,7 +172,7 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 <pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10</span>); y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10</span>)
 <span class="kw">lm</span>(y ~<span class="st"> </span>x)</code></pre>
 <pre><code>## y ~ x
-## &lt;environment: 0x19c8a10&gt;</code></pre>
+## &lt;environment: 0x22f41b8&gt;</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r">stats::<span class="kw">lm</span>(y ~<span class="st"> </span>x)</code></pre>
 <pre><code>## 
 ## Call:
@@ -181,7 +180,7 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 ## 
 ## Coefficients:
 ## (Intercept)            x  
-##     -0.1003      -0.5592</code></pre>
+##     0.58050     -0.07618</code></pre>
 <p>Can you explain what is going on? Consider the results of <code>search()</code>.</p>
 <h3 id="looking-inside-a-package">Looking inside a package</h3>
 <p>Packages are available as &quot;Package source&quot;, namely the raw code and help files, and &quot;binaries&quot;, where stuff is packaged up for R to use efficiently.</p>
@@ -288,7 +287,7 @@ x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1
 <pre><code>## Loading required package: xtable</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">xtable</span>(<span class="kw">table</span>(air$UniqueCarrier, air$Cancelled)), <span class="dt">type =</span> <span class="st">&quot;html&quot;</span>)</code></pre>
 <pre><code>## &lt;!-- html table generated in R 3.2.2 by xtable 1.7-4 package --&gt;
-## &lt;!-- Fri Aug  5 15:04:42 2016 --&gt;
+## &lt;!-- Mon Aug  8 14:19:28 2016 --&gt;
 ## &lt;table border=1&gt;
 ## &lt;tr&gt; &lt;th&gt;  &lt;/th&gt; &lt;th&gt; 0 &lt;/th&gt; &lt;th&gt; 1 &lt;/th&gt;  &lt;/tr&gt;
 ##   &lt;tr&gt; &lt;td align=&quot;right&quot;&gt; AA &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 49222 &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 1033 &lt;/td&gt; &lt;/tr&gt;

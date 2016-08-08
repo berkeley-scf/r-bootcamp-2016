@@ -55,10 +55,10 @@ chi2_df1000 &lt;-<span class="st"> </span><span class="kw">sum</span>(chi2vals)
 <pre class="sourceCode r"><code class="sourceCode r">vals &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="fl">1e6</span>)
 <span class="kw">system.time</span>(trunc &lt;-<span class="st"> </span><span class="kw">ifelse</span>(vals &gt;<span class="st"> </span><span class="dv">0</span>, vals, <span class="dv">0</span>))</code></pre>
 <pre><code>##    user  system elapsed 
-##   0.149   0.008   0.157</code></pre>
+##   0.156   0.016   0.173</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">system.time</span>(vals &lt;-<span class="st"> </span>vals *<span class="st"> </span>(vals &gt;<span class="st"> </span><span class="dv">0</span>))</code></pre>
 <pre><code>##    user  system elapsed 
-##   0.008   0.000   0.008</code></pre>
+##   0.010   0.000   0.009</code></pre>
 <p><strong>Question</strong>: What am I doing with <code>vals * (vals &gt; 0)</code> ? What happens behind the scenes in R?</p>
 <p>If you use a trick like this, having a comment in your code is a good idea.</p>
 <p>Lots of functions in R are vectorized, such as some we've already used.</p>
@@ -156,7 +156,7 @@ for(i in <span class="dv">1</span>:n)
       vals &lt;-<span class="st"> </span><span class="kw">c</span>(vals, i)
 })</code></pre>
 <pre><code>##    user  system elapsed 
-##   2.760   0.028   2.787</code></pre>
+##   3.061   0.032   3.091</code></pre>
 <p>The same holds for using <code>rbind()</code>, <code>cbind()</code>, or adding to a list, one element at a time.</p>
 <p>This is both slow and unclear (in the sense that it appears the code has a bug, but it works):</p>
 <pre class="sourceCode r"><code class="sourceCode r">vals &lt;-<span class="st"> </span><span class="dv">0</span>
@@ -166,7 +166,7 @@ for(i in <span class="dv">1</span>:n)
       vals[i] &lt;-<span class="st"> </span>i
 })</code></pre>
 <pre><code>##    user  system elapsed 
-##   1.581   0.040   1.620</code></pre>
+##   2.002   0.048   2.049</code></pre>
 <p><strong>Question</strong>: Thoughts on why these are so slow? Think about what R might be doing behind the scenes</p>
 </div>
 <div id="the-answer-is-to-pre-allocate-memory" class="slide section level1">
@@ -180,7 +180,7 @@ for(i in <span class="dv">1</span>:n)
       vals[i] &lt;-<span class="st"> </span>i
 })</code></pre>
 <pre><code>##    user  system elapsed 
-##   0.038   0.000   0.037</code></pre>
+##   0.041   0.000   0.042</code></pre>
 <p>Here's how to pre-allocate an empty list:</p>
 <pre class="sourceCode r"><code class="sourceCode r">vals &lt;-<span class="st"> </span><span class="kw">list</span>(); <span class="kw">length</span>(vals) &lt;-<span class="st"> </span>n
 <span class="kw">head</span>(vals)</code></pre>
@@ -218,15 +218,15 @@ col_sum &lt;-<span class="st"> </span><span class="kw">colSums</span>(mat)</code
 <pre class="sourceCode r"><code class="sourceCode r">myList &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">rnorm</span>(<span class="dv">3</span>), <span class="kw">rnorm</span>(<span class="dv">3</span>), <span class="kw">rnorm</span>(<span class="dv">5</span>))
 <span class="kw">lapply</span>(myList, min)</code></pre>
 <pre><code>## [[1]]
-## [1] 0.3693766
+## [1] -1.905404
 ## 
 ## [[2]]
-## [1] -0.5237159
+## [1] 0.6732947
 ## 
 ## [[3]]
-## [1] -1.835753</code></pre>
+## [1] 0.1856627</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sapply</span>(myList, min)</code></pre>
-<pre><code>## [1]  0.3693766 -0.5237159 -1.8357529</code></pre>
+<pre><code>## [1] -1.9054035  0.6732947  0.1856627</code></pre>
 <p>Note that we don't generally want to use <code>apply()</code> on a data frame.</p>
 <p>You can use <code>lapply()</code> and <code>sapply()</code> on regular vectors, such as vectors of indices, which can come in handy, though this is a silly example:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sapply</span>(<span class="dv">1</span>:<span class="dv">10</span>, function(x) x^<span class="dv">2</span>)</code></pre>
