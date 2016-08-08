@@ -1,19 +1,16 @@
 % R Bootcamp, Module 8: Graphics
 % August 2016, UC Berkeley
-% Kellie Ottoboni (kellieotto@berkeley.edu)
-% Built off of material by Chris Krogslund
+% Kellie Ottoboni (kellieotto@berkeley.edu) (built off of material by Chris Krogslund)
 
 ```{r chunksetup, include=FALSE} 
 # include any code here you don't want to show up in the document,
 # e.g. package and dataset loading
-library(plyr)
 library(dplyr)
-
 library(tidyr)
-library(reshape2)
 library(ggplot2)
 library(lattice)
 library(gridExtra)
+library(reshape2)
 if(!('modules' %in% unlist(strsplit(getwd(), split = '/')))) setwd('modules')
 medals <- read.csv("../data/all_medalists.csv", header = TRUE, stringsAsFactors = FALSE)
 
@@ -38,7 +35,8 @@ First, we'll use dplyr and tidyr to count the medals of each type won, for each 
 head(medals)
 
 # dplyr and tidyr refresher
-medal_counts <- medals %>% group_by(Medal, Year, Country) %>% summarise(count = n())
+medal_counts <- medals %>% group_by(Medal, Year, Country) %>% 
+             summarise(count = n())
 head(medal_counts)
 ```
 
@@ -75,7 +73,7 @@ Additional parameters can be passed in to customize the plot:
 
 More layers can be added to the plot with additional calls to `lines`, `points`, `text`, etc.
 
-```{r}
+```{r, fig.cap = ""}
 plot(medal_counts_wide$Year, medal_counts_wide$Gold) # Basic
 plot(usa_gold_medals$Year, usa_gold_medals$count, type = "l", 
      main = "USA Gold Medals",
@@ -88,7 +86,7 @@ points(x = 1984, y = usa_gold_medals$count[usa_gold_medals$Year == 1984],
 
 These are just a few other types of plots you can make in base graphics.
 
-```{r}
+```{r, fig.cap = ""}
 boxplot(Gold~Year, data = medal_counts_wide)
 hist(medal_counts_wide$Gold)
 plot(density(medal_counts_wide$Gold))
@@ -168,21 +166,24 @@ z~y*x         # Show the 3D relationship between x, y, and z
 ```
 
 Let's recreate some of the plots we made above using lattice. wlattice overlap with the options for base graphics.
-```{r}
+```{r, fig.cap = ""}
 xyplot(Gold~Year, data = medal_counts_wide, main = "Gold Medal Counts")
 xyplot(count~Year, data = usa_gold_medals, type = "l", main = "USA Gold Medals")
 
 # Boxplot
-bwplot(Year~Gold, data = medal_counts_wide, main = "Gold Medal Counts") # Labels are lost when lattice automatically converts Year to a factor
+bwplot(Year~Gold, data = medal_counts_wide, main = "Gold Medal Counts") 
+  # Labels are lost when lattice automatically converts Year to a factor
 # Flip the coordinates so year increases on the x-axis
-bwplot(Gold~Year, data = medal_counts_wide, main = "Gold Medal Counts", horizontal = FALSE) 
+bwplot(Gold~Year, data = medal_counts_wide, main = "Gold Medal Counts", 
+                  horizontal = FALSE) 
 
 # Histogram
 histogram(~Gold, medal_counts_wide, type="count", main = "Gold Medal Counts")
 # Density plot
 densityplot(~Gold, medal_counts_wide, main = "Gold Medal Counts")
 # Bar chart
-barchart(count~Year, data = usa_gold_medals, width = 4, main = "USA Gold Medals", horizontal = FALSE)
+barchart(count~Year, data = usa_gold_medals, width = 4, 
+                     main = "USA Gold Medals", horizontal = FALSE)
 ```
 
 ## Pros/cons of lattice
@@ -207,7 +208,8 @@ Note that ggplot2 graphs in layers in a *continuing call* (hence the endless +..
 You can see the layering effect by comparing the same graph with different colors for each layer
 
 ```{r, fig.cap=" ", warning=FALSE}
-p <- ggplot(data = medal_counts_wide, aes(x = Year, y = Gold)) + geom_point(color = "gold")
+p <- ggplot(data = medal_counts_wide, aes(x = Year, y = Gold)) + 
+                 geom_point(color = "gold")
 p
 p + geom_point(aes(x = Year, y = Silver), color = "gray") + ylab("Medals")
 ```
@@ -228,16 +230,21 @@ The basic idea is that the visualization of all data requires four items:
 ggplot2 allows the user to manipulate all four of these items.
 
 
-```{r, warning = FALSE, message = FALSE}
-ggplot(medal_counts_wide, aes(x = Year, y = Gold)) + geom_point() + ggtitle("Gold Medal Counts")
-ggplot(usa_gold_medals, aes(x = Year, y = count)) + geom_line() + ggtitle("USA Gold Medals")
+```{r, warning = FALSE, message = FALSE, fig.cap = ""}
+ggplot(medal_counts_wide, aes(x = Year, y = Gold)) + geom_point() + 
+                          ggtitle("Gold Medal Counts")
+ggplot(usa_gold_medals, aes(x = Year, y = count)) + geom_line() + 
+                        ggtitle("USA Gold Medals")
 
 # Boxplots
-ggplot(medal_counts_wide, aes(x = factor(Year), y = Gold)) + geom_boxplot() + ggtitle("Gold Medal Counts")
+ggplot(medal_counts_wide, aes(x = factor(Year), y = Gold)) + 
+                          geom_boxplot() + ggtitle("Gold Medal Counts")
 # Histogram
-ggplot(medal_counts_wide, aes(x = Gold)) + geom_histogram() + ggtitle("Gold Medal Counts")
+ggplot(medal_counts_wide, aes(x = Gold)) + geom_histogram() + 
+                          ggtitle("Gold Medal Counts")
 # Density plot
-ggplot(medal_counts_wide, aes(x = Gold)) + geom_density() + ggtitle("Gold Medal Counts")
+ggplot(medal_counts_wide, aes(x = Gold)) + geom_density() + 
+                          ggtitle("Gold Medal Counts")
 # Bar chart
 ggplot(usa_gold_medals, aes(x = Year, y = count)) + geom_bar(stat = "identity")
 ```
@@ -247,24 +254,29 @@ ggplot(usa_gold_medals, aes(x = Year, y = count)) + geom_bar(stat = "identity")
 
 * Base graphics/lattice and ggplot2 have one big difference: ggplot2 **requires** your data to be in tidy format. For base graphics, it can actually be helpful *not* to have your data in tidy format. Compare:
 
-```{r}
+```{r, fig.cap = ""}
 usa_all_medals <- medal_counts %>% filter(Country == "United States")
-usa_all_medals_untidy <- medal_counts_wide %>% filter(Country == "United States") # Medal is the variable, but it spans multiple columns
+usa_all_medals_untidy <- medal_counts_wide %>% 
+                      filter(Country == "United States") 
+   # Medal is the variable, but it spans multiple columns
 
 # Base graphics call
-plot(usa_all_medals_untidy$Year, usa_all_medals_untidy$Gold, col = "green", type = "l")
+plot(usa_all_medals_untidy$Year, usa_all_medals_untidy$Gold, col = "green", 
+                                 type = "l")
 lines(usa_all_medals_untidy$Year, usa_all_medals_untidy$Silver, col = "blue")
 lines(usa_all_medals_untidy$Year, usa_all_medals_untidy$Bronze, col = "red")
-legend("right", legend = c("Gold", "Silver", "Bronze"), fill = c("green", "blue", "red"))
+legend("right", legend = c("Gold", "Silver", "Bronze"), 
+                fill = c("green", "blue", "red"))
 
 # ggplot2 call
-ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_line(aes(color = Medal))
+ggplot(data = usa_all_medals, aes(x = Year, y = count)) + 
+            geom_line(aes(color = Medal))
 ```
 
 * The difference is that ggplot treats `Medal` as an aesthetic parameter that differentiates kinds of statistics. Base graphics treats each medal type as a layer to the plot.
 * ggplot2 plays nice with dplyr and pipes. If you want to manipulate your data specifically for one plot but not save the new dataset, you can call your dplyr chain and pipe it directly into a ggplot call:
 
-```{r, fig.show = "hold"}
+```{r, fig.cap = "", fig.show = "hold"}
 # Assuming you've already subsetted your data to USA Gold medals
 ggplot(usa_gold_medals, aes(x = Year, y = count)) + geom_line()
 
@@ -323,23 +335,28 @@ median_gold_medals <- medal_counts %>%
   group_by(Country) %>%
   summarise(med = median(count))
 
-ggplot(data = median_gold_medals[1:15, ], aes(x = Country, y = med)) + geom_bar(stat="identity") # ggplot2
+ggplot(data = median_gold_medals[1:15, ], aes(x = Country, y = med)) + 
+            geom_bar(stat="identity") # ggplot2
 barchart(med~Country, data = median_gold_medals[1:15, ]) # lattice
 ```
 
 # lattice v. ggplot2: boxplots 
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
 # Notice that here, you must explicitly convert numeric years to factors
-ggplot(data = medal_counts_wide, aes(x = factor(Year), y = Gold)) + geom_boxplot() # ggplot2
+ggplot(data = medal_counts_wide, aes(x = factor(Year), y = Gold)) + 
+            geom_boxplot() # ggplot2
 bwplot(Gold~factor(Year), data = medal_counts_wide, horizontal = FALSE) # lattice
 ```
 
 # lattice v. ggplot2: "trellis" plots 
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
 # Subset the data to North America countries for easier viewing
-northern_hem <- medal_counts_wide %>% filter(Country %in% c("United States", "Canada", "Cuba", "Mexico"))
+northern_hem <- medal_counts_wide %>% 
+             filter(Country %in% c("United States", 
+                            "Canada", "Cuba", "Mexico"))
 
-ggplot(data = northern_hem, aes(x = Year, y = Gold)) + geom_point() + facet_wrap(~Country) # ggplot2
+ggplot(data = northern_hem, aes(x = Year, y = Gold)) + geom_point() + 
+            facet_wrap(~Country) # ggplot2
 xyplot(Gold~Year|Country, data = northern_hem) # lattice
 ```
 
@@ -351,13 +368,15 @@ volcano3d <- melt(volcano) # Use reshape2 package to melt the data into tidy for
 head(volcano3d) # Examine volcano3d dataset (head)
 names(volcano3d) <- c("xvar", "yvar", "zvar") # Rename volcano3d columns
 
-ggplot(data = volcano3d, aes(x = xvar, y = yvar, z = zvar)) + geom_contour() # ggplot2
+ggplot(data = volcano3d, aes(x = xvar, y = yvar, z = zvar)) + 
+            geom_contour() # ggplot2
 contourplot(zvar~xvar + yvar, data = volcano3d) # lattice
 ```
 
 # lattice v. ggplot2: tile/image/level plots
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
-ggplot(data = volcano3d, aes(x = xvar, y = yvar, z = zvar)) + geom_tile(aes(fill = zvar)) # ggplot2
+ggplot(data = volcano3d, aes(x = xvar, y = yvar, z = zvar)) + 
+            geom_tile(aes(fill = zvar)) # ggplot2
 levelplot(zvar~xvar + yvar, data = volcano3d) # lattice
 ```
 
@@ -389,9 +408,12 @@ xyplot(count~Year, data = usa_gold_medals,
 ### Axis and point scales
 
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_point() # ggplot2
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_point(size=3) # ggplot2
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_point(size=1) # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_point() # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_point(size=3) # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_point(size=1) # ggplot2
 ```
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
 xyplot(count~Year, data = usa_gold_medals) # lattice
@@ -404,8 +426,10 @@ xyplot(count~Year, data = usa_gold_medals, cex = .5) # lattice
 
 #### Colors
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_point(color = colors()[11]) # ggplot2
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_point(color = "red") # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_point(color = colors()[11]) # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_point(color = "red") # ggplot2
 ```
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
 xyplot(count~Year, data = usa_gold_medals, col = colors()[11]) #lattice
@@ -425,23 +449,30 @@ Parameters passed into `aes` should be *variables* in your dataset.
 Parameters passed to `geom_xxx` outside of `aes` should *not* be related to your dataset - they apply to the whole figure.
 
 ```{r, fig.cap=" ", warning=FALSE}
-ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_line(aes(color = Medal))
+ggplot(data = usa_all_medals, aes(x = Year, y = count)) + 
+            geom_line(aes(color = Medal))
 ```
 Note what happens when we specify the color parameter outside of the aesthetic operator. ggplot2 views these specifications as invalid graphical parameters. 
 
 ```{r, fig.cap=" ", warning=FALSE, error = TRUE}
-ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_point(color = Medal)
-ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_point(color = "Medal")
-ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_point(color = "red")
+ggplot(data = usa_all_medals, aes(x = Year, y = count)) + 
+            geom_point(color = Medal)
+ggplot(data = usa_all_medals, aes(x = Year, y = count)) + 
+            geom_point(color = "Medal")
+ggplot(data = usa_all_medals, aes(x = Year, y = count)) + 
+            geom_point(color = "red")
 ```
 
 
 
 #### Point Styles and Widths
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_point(shape = 3) # ggplot2
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_point(shape = "w") # ggplot2
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_point(shape = "$", size=5) # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_point(shape = 3) # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_point(shape = "w") # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_point(shape = "$", size=5) # ggplot2
 ```
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
 xyplot(count~Year, data = usa_gold_medals, pch = 3) # lattice
@@ -451,30 +482,39 @@ xyplot(count~Year, data = usa_gold_medals, pch = "$", cex = 2) # lattice
 
 #### Line Styles and Widths
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_line(linetype = 1) # ggplot2
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_line(linetype = 2) # ggplot2
-ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + geom_line(linetype = 5, size = 2) # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_line(linetype = 1) # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_line(linetype = 2) # ggplot2
+ggplot(data = usa_gold_medals, aes(x = Year, y = count)) + 
+            geom_line(linetype = 5, size = 2) # ggplot2
 ```
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
 xyplot(count~Year, data = usa_gold_medals, type = "l", lty = 1) # lattice
 xyplot(count~Year, data = usa_gold_medals, type = "l", lty = 2) # lattice
-xyplot(count~Year, data = usa_gold_medals, type = "l", lty = 3, lwd = 3) # lattice
+xyplot(count~Year, data = usa_gold_medals, type = "l", 
+                   lty = 3, lwd = 3) # lattice
 ```
 
 #### Using aesthetics to highlight features
 Differences in kind
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
-ggplot(data = northern_hem, aes(x = Year, y = Gold)) + geom_line(aes(linetype = Country))
-ggplot(data = northern_hem, aes(x = Year, y = Gold)) + geom_line(aes(shape = Country))
+ggplot(data = northern_hem, aes(x = Year, y = Gold)) + 
+            geom_line(aes(linetype = Country))
+ggplot(data = northern_hem, aes(x = Year, y = Gold)) + 
+            geom_line(aes(shape = Country))
 ```
 Differences in degree
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
-ggplot(data = northern_hem, aes(x = Year, y = Silver)) + geom_point(aes(color = Gold))
-ggplot(data = northern_hem, aes(x = Year, y = Silver)) + geom_point(aes(size = Gold))
+ggplot(data = northern_hem, aes(x = Year, y = Silver)) + 
+            geom_point(aes(color = Gold))
+ggplot(data = northern_hem, aes(x = Year, y = Silver)) + 
+            geom_point(aes(size = Gold))
 ```
 Multiple non-coordinate aesthetics (differences in kind using color, degree using point size)
 ```{r, fig.cap=" ", warning=FALSE}
-ggplot(data = northern_hem, aes(x = Year, y = Silver)) + geom_point(aes(size = Gold, color = Country))
+ggplot(data = northern_hem, aes(x = Year, y = Silver)) + 
+            geom_point(aes(size = Gold, color = Country))
 ```
 
 # Fitted lines and curves with ggplot2
@@ -520,8 +560,10 @@ plot1 <- ggplot(data = medal_counts_wide, aes(x = Year, y = Gold)) +
   geom_point(aes(x = Year, y = Silver), color = "gray") + 
   geom_point(aes(x = Year, y = Bronze), color = "brown") + 
   ylab("Medals")
-plot2 <- ggplot(data = usa_all_medals, aes(x = Year, y = count)) + geom_line(aes(color = Medal))
-plot3 <- ggplot(data = northern_hem, aes(x = Year, y = Gold)) + geom_point(aes(color = Country))
+plot2 <- ggplot(data = usa_all_medals, aes(x = Year, y = count)) + 
+      geom_line(aes(color = Medal))
+plot3 <- ggplot(data = northern_hem, aes(x = Year, y = Gold)) + 
+      geom_point(aes(color = Country))
 
 
 # Call grid.arrange
@@ -584,7 +626,8 @@ For some of these you may want to use a smaller version of the dataset, such as 
 
 ### Using the ideas
 
-5) Create a trellis plot of departure delay boxplots, one per destination for this subset of destinations, `DestSubset <- c('LAX','SEA','PHX','DEN','MSP','JFK','ATL','DFW','IAH', 'ORD')`. Use a 2x5 layout of panels in the plot.
+5) Create a trellis plot of departure delay boxplots, one per destination for this subset of destinations, 
+`DestSubset <- c('LAX','SEA','PHX','DEN','MSP','JFK','ATL','DFW','IAH', 'ORD')`. Use a 2x5 layout of panels in the plot.
 
 6) Subset the data to flights going to Chicago (ORD) and Houston (IAH). Plot arrival delay against scheduled departure time (CRSDepTime). Now plot so that flights to Chicago are in one color and  those to Houston in another. Use `scale_x_continuous()` and `scale_y_continuous()` to set the x-axis limits to be in the range from 6 am to midnight and the y-axis limits to be in the range (-10, 120).
 
