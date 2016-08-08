@@ -454,7 +454,7 @@ head(gap_medium)
 
 # Extra Resources
 
-`dplyr` and `tiyr` have many more functions to help you wrangle and manipulate your data. See the  [Data Wrangling Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) for more.
+`dplyr` and `tidyr` have many more functions to help you wrangle and manipulate your data. See the  [Data Wrangling Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf) for more.
 
 # Describing Relationships & Causal Inference
 
@@ -462,7 +462,7 @@ head(gap_medium)
 
 - This often requires doing the following:
 1. Estimating Regressions
-2. Carryingout Regression Diagnostics
+2. Carrying out Regression Diagnostics
 
 # Inference/Regression
 
