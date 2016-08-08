@@ -270,7 +270,7 @@ reg1 <- glm(formula = gdpPercap ~ lifeExp + pop + year,
                 family=gaussian, data=gapminder)
 
 reg2 <- glm(formula = gdpPercap ~ lifeExp + pop + factor(year), 
-                family=gaussian, data=gapminder)
+                family = gaussian, data = gapminder)
 
 ## 6 ## 
 gap_rel_gdp_sign <- gap_rel_gdp %>%
