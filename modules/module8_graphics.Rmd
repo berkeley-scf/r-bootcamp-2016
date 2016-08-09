@@ -25,7 +25,7 @@ medals <- read.csv("../data/all_medalists.csv", header = TRUE, stringsAsFactors 
 # The data
 
 * All Summer Olympic medalists from 1896-2008
-* Variables include name, gender, country, sporting event, and type of medal won
+* Variables include name, gender, country, country code (`NOC`), sporting event, and type of medal won
 * We don't actually care about names of winners: we're interested in how many medals that different countries won
 
 For more info, see [The Guardian Datablog Olympic medal winners: every one since 1896 as open data](https://www.theguardian.com/sport/datablog/2012/jun/25/olympic-medal-winner-list-data)
@@ -35,8 +35,9 @@ First, we'll use dplyr and tidyr to count the medals of each type won, for each 
 head(medals)
 
 # dplyr and tidyr refresher
-medal_counts <- medals %>% group_by(Medal, Year, Country) %>% 
-             summarise(count = n())
+medal_counts <- medals %>% 
+  group_by(Medal, Year, NOC) %>% 
+  summarise(count = n())
 head(medal_counts)
 ```
 
@@ -54,7 +55,7 @@ Finally, let's subset the data to gold medal counts for the US, for easier plott
 ```{r}
 usa_gold_medals <-  medal_counts %>% 
   filter(Medal == "Gold") %>%
-  filter(Country == "United States")
+  filter(NOC == "USA")
 ```
 
 # Base graphics
@@ -92,7 +93,6 @@ hist(medal_counts_wide$Gold)
 plot(density(medal_counts_wide$Gold))
 barplot(usa_gold_medals$count, width = 4, names.arg = usa_gold_medals$Year, main = "USA Gold Medals")
 mosaicplot(Year~Medal, medal_counts)
-
 ```
 
 ## Object-oriented plots
@@ -101,10 +101,8 @@ mosaicplot(Year~Medal, medal_counts)
 
 ```{r, fig.cap=" "}
 medal_lm <- lm(Gold ~ Bronze + Silver, data = medal_counts_wide)
-plot(medal_counts_wide %>% select(-Country)) # Calls plotting method for class of the dataset ("data.frame")
+plot(medal_counts_wide %>% select(-NOC)) # Calls plotting method for class of the dataset ("data.frame")
 plot(medal_lm, which=1:2) # Calls plotting method for class of medal_lm object ("lm"), print first two plots only
-
-
 ```
 
 
@@ -172,9 +170,9 @@ xyplot(count~Year, data = usa_gold_medals, type = "l", main = "USA Gold Medals")
 
 # Boxplot
 bwplot(Year~Gold, data = medal_counts_wide, main = "Gold Medal Counts") 
-  # Labels are lost when lattice automatically converts Year to a factor
 # Flip the coordinates so year increases on the x-axis
-bwplot(Gold~Year, data = medal_counts_wide, main = "Gold Medal Counts", 
+# Explicitly turn Year into a factor
+bwplot(Gold~factor(Year), data = medal_counts_wide, main = "Gold Medal Counts", 
                   horizontal = FALSE) 
 
 # Histogram
@@ -182,7 +180,7 @@ histogram(~Gold, medal_counts_wide, type="count", main = "Gold Medal Counts")
 # Density plot
 densityplot(~Gold, medal_counts_wide, main = "Gold Medal Counts")
 # Bar chart
-barchart(count~Year, data = usa_gold_medals, width = 4, 
+barchart(count~factor(Year), data = usa_gold_medals, width = 4, 
                      main = "USA Gold Medals", horizontal = FALSE)
 ```
 
@@ -255,9 +253,9 @@ ggplot(usa_gold_medals, aes(x = Year, y = count)) + geom_bar(stat = "identity")
 * Base graphics/lattice and ggplot2 have one big difference: ggplot2 **requires** your data to be in tidy format. For base graphics, it can actually be helpful *not* to have your data in tidy format. Compare:
 
 ```{r, fig.cap = ""}
-usa_all_medals <- medal_counts %>% filter(Country == "United States")
+usa_all_medals <- medal_counts %>% filter(NOC == "USA")
 usa_all_medals_untidy <- medal_counts_wide %>% 
-                      filter(Country == "United States") 
+                      filter(NOC == "USA") 
    # Medal is the variable, but it spans multiple columns
 
 # Base graphics call
@@ -283,7 +281,7 @@ ggplot(usa_gold_medals, aes(x = Year, y = count)) + geom_line()
 # This combines the subsetting and plotting into one step
 medal_counts %>% 
   filter(Medal == "Gold") %>%
-  filter(Country == "United States") %>%
+  filter(NOC == "USA") %>%
   ggplot(aes(x = Year, y = count)) + geom_line()
 ```
 
@@ -332,12 +330,12 @@ xyplot(count~Year, data = usa_gold_medals, type = "l") # lattice
 # Create a dataframe of median number of gold medals by country
 median_gold_medals <- medal_counts %>% 
   filter(Medal == "Gold") %>% 
-  group_by(Country) %>%
+  group_by(NOC) %>%
   summarise(med = median(count))
 
-ggplot(data = median_gold_medals[1:15, ], aes(x = Country, y = med)) + 
+ggplot(data = median_gold_medals[1:15, ], aes(x = NOC, y = med)) + 
             geom_bar(stat="identity") # ggplot2
-barchart(med~Country, data = median_gold_medals[1:15, ]) # lattice
+barchart(med~NOC, data = median_gold_medals[1:15, ]) # lattice
 ```
 
 # lattice v. ggplot2: boxplots 
@@ -352,12 +350,14 @@ bwplot(Gold~factor(Year), data = medal_counts_wide, horizontal = FALSE) # lattic
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
 # Subset the data to North America countries for easier viewing
 northern_hem <- medal_counts_wide %>% 
-             filter(Country %in% c("United States", 
-                            "Canada", "Cuba", "Mexico"))
+             filter(NOC %in% c("USA", 
+                            "CAN", # Canada
+                            "CUB", # Cuba 
+                            "MEX")) # Mexico
 
 ggplot(data = northern_hem, aes(x = Year, y = Gold)) + geom_point() + 
-            facet_wrap(~Country) # ggplot2
-xyplot(Gold~Year|Country, data = northern_hem) # lattice
+            facet_wrap(~NOC) # ggplot2
+xyplot(Gold~Year|NOC, data = northern_hem) # lattice
 ```
 
 # lattice v. ggplot2: countour plots
@@ -385,7 +385,7 @@ levelplot(zvar~xvar + yvar, data = volcano3d) # lattice
 # Create a subset of the dataset containing only data for France
 cloud(Gold~Bronze*Silver, data = northern_hem)
 
-cloud(Gold~Bronze*Silver|Country, data = northern_hem)
+cloud(Gold~Bronze*Silver|NOC, data = northern_hem)
 ```
 
 # lattice v. ggplot2: options 
@@ -500,9 +500,9 @@ xyplot(count~Year, data = usa_gold_medals, type = "l",
 Differences in kind
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
 ggplot(data = northern_hem, aes(x = Year, y = Gold)) + 
-            geom_line(aes(linetype = Country))
+            geom_line(aes(linetype = NOC))
 ggplot(data = northern_hem, aes(x = Year, y = Gold)) + 
-            geom_line(aes(shape = Country))
+            geom_point(aes(shape = NOC, color = NOC))
 ```
 Differences in degree
 ```{r, fig.cap=" ", warning=FALSE, fig.show = "hold"}
@@ -514,7 +514,7 @@ ggplot(data = northern_hem, aes(x = Year, y = Silver)) +
 Multiple non-coordinate aesthetics (differences in kind using color, degree using point size)
 ```{r, fig.cap=" ", warning=FALSE}
 ggplot(data = northern_hem, aes(x = Year, y = Silver)) + 
-            geom_point(aes(size = Gold, color = Country))
+            geom_point(aes(size = Gold, color = NOC))
 ```
 
 # Fitted lines and curves with ggplot2
@@ -563,7 +563,7 @@ plot1 <- ggplot(data = medal_counts_wide, aes(x = Year, y = Gold)) +
 plot2 <- ggplot(data = usa_all_medals, aes(x = Year, y = count)) + 
       geom_line(aes(color = Medal))
 plot3 <- ggplot(data = northern_hem, aes(x = Year, y = Gold)) + 
-      geom_point(aes(color = Country))
+      geom_line(aes(linetype = NOC))
 
 
 # Call grid.arrange
