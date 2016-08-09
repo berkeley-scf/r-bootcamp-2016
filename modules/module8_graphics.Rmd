@@ -91,7 +91,8 @@ These are just a few other types of plots you can make in base graphics.
 boxplot(Gold~Year, data = medal_counts_wide)
 hist(medal_counts_wide$Gold)
 plot(density(medal_counts_wide$Gold))
-barplot(usa_gold_medals$count, width = 4, names.arg = usa_gold_medals$Year, main = "USA Gold Medals")
+barplot(usa_gold_medals$count, width = 4, names.arg = usa_gold_medals$Year, 
+                               main = "USA Gold Medals")
 mosaicplot(Year~Medal, medal_counts)
 ```
 
@@ -328,9 +329,11 @@ xyplot(count~Year, data = usa_gold_medals, type = "l") # lattice
 # lattice v. ggplot2: bar plots 
 ```{r, fig.cap=" ", warning=FALSE, message=FALSE, fig.show = "hold"}
 # Create a dataframe of median number of gold medals by country
+# note that the conversion to 'double' is because the median
+# calculation had an error with 'count' is stored as integer
 median_gold_medals <- medal_counts %>% 
-  filter(Medal == "Gold") %>% 
-  group_by(NOC) %>%
+  filter(Medal == "Gold") %>% mutate(count = as.double(count)) %>%
+  group_by(NOC) %>%  
   summarise(med = median(count))
 
 ggplot(data = median_gold_medals[1:15, ], aes(x = NOC, y = med)) + 
