@@ -401,7 +401,7 @@ lm(y ~ x)
 </code></pre>
 
 <pre><code>## y ~ x
-## &lt;environment: 0xb078820&gt;
+## &lt;environment: 0xc9549d0&gt;
 </code></pre>
 
 <pre><code class="r">stats::lm(y ~ x)
@@ -414,6 +414,9 @@ lm(y ~ x)
 ## Coefficients:
 ## (Intercept)            x  
 ##     -0.5889       0.1679
+</code></pre>
+
+<pre><code class="r">rm(lm)
 </code></pre>
 
 <p>Can you explain what is going on? Consider the results of <code>search()</code>.</p>
@@ -556,7 +559,7 @@ print(xtable(table(air$UniqueCarrier, air$Cancelled)), type = &quot;html&quot;)
 </code></pre>
 
 <pre><code>## &lt;!-- html table generated in R 3.2.2 by xtable 1.7-4 package --&gt;
-## &lt;!-- Mon Aug  8 14:19:42 2016 --&gt;
+## &lt;!-- Thu Aug 11 15:07:16 2016 --&gt;
 ## &lt;table border=1&gt;
 ## &lt;tr&gt; &lt;th&gt;  &lt;/th&gt; &lt;th&gt; 0 &lt;/th&gt; &lt;th&gt; 1 &lt;/th&gt;  &lt;/tr&gt;
 ##   &lt;tr&gt; &lt;td align=&quot;right&quot;&gt; AA &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 49222 &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 1033 &lt;/td&gt; &lt;/tr&gt;

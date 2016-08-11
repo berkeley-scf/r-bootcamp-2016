@@ -120,6 +120,7 @@ lm(7)
 x <- rnorm(10); y <- rnorm(10)
 lm(y ~ x)
 stats::lm(y ~ x)
+rm(lm)
 ```
 
 Can you explain what is going on? Consider the results of `search()`.
