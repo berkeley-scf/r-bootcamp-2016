@@ -401,7 +401,7 @@ lm(y ~ x)
 </code></pre>
 
 <pre><code>## y ~ x
-## &lt;environment: 0xc9549d0&gt;
+## &lt;environment: 0x3063e68&gt;
 </code></pre>
 
 <pre><code class="r">stats::lm(y ~ x)
@@ -459,9 +459,10 @@ ls data
 <pre><code class="r">getwd()  # what directory will R look in?
 # Linux/Mac specific
 setwd(&#39;~/Desktop/r-bootcamp-2016&#39;) # change the working directory
-setwd(&#39;/Users/paciorek/Desktop/tmp&#39;) # absolute path
+setwd(&#39;/Users/paciorek/Desktop&#39;) # absolute path
 getwd()
-setwd(&#39;../r-bootcamp-2016&#39;) # relative path
+setwd(&#39;r-bootcamp-2016/modules&#39;) # relative path
+setwd(&#39;../tmp&#39;) # relative path, up and back down the tree
 
 # Windows - use either \\ or / to indicate directories
 # setwd(&#39;C:\\Users\\Your_username\\Desktop\\r-bootcamp-2016&#39;)
@@ -559,7 +560,7 @@ print(xtable(table(air$UniqueCarrier, air$Cancelled)), type = &quot;html&quot;)
 </code></pre>
 
 <pre><code>## &lt;!-- html table generated in R 3.2.2 by xtable 1.7-4 package --&gt;
-## &lt;!-- Thu Aug 11 15:07:16 2016 --&gt;
+## &lt;!-- Thu Aug 18 07:56:51 2016 --&gt;
 ## &lt;table border=1&gt;
 ## &lt;tr&gt; &lt;th&gt;  &lt;/th&gt; &lt;th&gt; 0 &lt;/th&gt; &lt;th&gt; 1 &lt;/th&gt;  &lt;/tr&gt;
 ##   &lt;tr&gt; &lt;td align=&quot;right&quot;&gt; AA &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 49222 &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 1033 &lt;/td&gt; &lt;/tr&gt;

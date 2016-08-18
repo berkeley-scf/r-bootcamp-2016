@@ -172,7 +172,7 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 <pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10</span>); y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10</span>)
 <span class="kw">lm</span>(y ~<span class="st"> </span>x)</code></pre>
 <pre><code>## y ~ x
-## &lt;environment: 0x37a11b8&gt;</code></pre>
+## &lt;environment: 0x266d088&gt;</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r">stats::<span class="kw">lm</span>(y ~<span class="st"> </span>x)</code></pre>
 <pre><code>## 
 ## Call:
@@ -180,7 +180,7 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 ## 
 ## Coefficients:
 ## (Intercept)            x  
-##     -0.3655       0.5857</code></pre>
+##      0.1981       0.1446</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rm</span>(lm)</code></pre>
 <p>Can you explain what is going on? Consider the results of <code>search()</code>.</p>
 <h3 id="looking-inside-a-package">Looking inside a package</h3>
@@ -211,9 +211,10 @@ z &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">a 
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">getwd</span>()  <span class="co"># what directory will R look in?</span>
 <span class="co"># Linux/Mac specific</span>
 <span class="kw">setwd</span>(<span class="st">'~/Desktop/r-bootcamp-2016'</span>) <span class="co"># change the working directory</span>
-<span class="kw">setwd</span>(<span class="st">'/Users/paciorek/Desktop/tmp'</span>) <span class="co"># absolute path</span>
+<span class="kw">setwd</span>(<span class="st">'/Users/paciorek/Desktop'</span>) <span class="co"># absolute path</span>
 <span class="kw">getwd</span>()
-<span class="kw">setwd</span>(<span class="st">'../r-bootcamp-2016'</span>) <span class="co"># relative path</span>
+<span class="kw">setwd</span>(<span class="st">'r-bootcamp-2016/modules'</span>) <span class="co"># relative path</span>
+<span class="kw">setwd</span>(<span class="st">'../tmp'</span>) <span class="co"># relative path, up and back down the tree</span>
 
 <span class="co"># Windows - use either \\ or / to indicate directories</span>
 <span class="co"># setwd('C:\\Users\\Your_username\\Desktop\\r-bootcamp-2016')</span>
@@ -288,7 +289,7 @@ x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1
 <pre><code>## Loading required package: xtable</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">xtable</span>(<span class="kw">table</span>(air$UniqueCarrier, air$Cancelled)), <span class="dt">type =</span> <span class="st">&quot;html&quot;</span>)</code></pre>
 <pre><code>## &lt;!-- html table generated in R 3.2.2 by xtable 1.7-4 package --&gt;
-## &lt;!-- Thu Aug 11 15:07:02 2016 --&gt;
+## &lt;!-- Thu Aug 18 07:56:37 2016 --&gt;
 ## &lt;table border=1&gt;
 ## &lt;tr&gt; &lt;th&gt;  &lt;/th&gt; &lt;th&gt; 0 &lt;/th&gt; &lt;th&gt; 1 &lt;/th&gt;  &lt;/tr&gt;
 ##   &lt;tr&gt; &lt;td align=&quot;right&quot;&gt; AA &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 49222 &lt;/td&gt; &lt;td align=&quot;right&quot;&gt; 1033 &lt;/td&gt; &lt;/tr&gt;

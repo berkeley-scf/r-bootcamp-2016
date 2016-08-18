@@ -164,9 +164,10 @@ To read and write from R, you need to have a firm grasp of where in the computer
 getwd()  # what directory will R look in?
 # Linux/Mac specific
 setwd('~/Desktop/r-bootcamp-2016') # change the working directory
-setwd('/Users/paciorek/Desktop/tmp') # absolute path
+setwd('/Users/paciorek/Desktop') # absolute path
 getwd()
-setwd('../r-bootcamp-2016') # relative path
+setwd('r-bootcamp-2016/modules') # relative path
+setwd('../tmp') # relative path, up and back down the tree
 
 # Windows - use either \\ or / to indicate directories
 # setwd('C:\\Users\\Your_username\\Desktop\\r-bootcamp-2016')
