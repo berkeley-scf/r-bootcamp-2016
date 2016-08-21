@@ -629,7 +629,7 @@ For some of these you may want to use a smaller version of the dataset, such as 
 
 ### Using the ideas
 
-5) Create a trellis plot of departure delay boxplots, one per destination for this subset of destinations, 
+5) Create a trellis plot of departure delay by day of week boxplots, one subplot per destination for this subset of destinations, 
 `DestSubset <- c('LAX','SEA','PHX','DEN','MSP','JFK','ATL','DFW','IAH', 'ORD')`. Use a 2x5 layout of panels in the plot.
 
 6) Subset the data to flights going to Chicago (ORD) and Houston (IAH). Plot arrival delay against scheduled departure time (CRSDepTime). Now plot so that flights to Chicago are in one color and  those to Houston in another. Use `scale_x_continuous()` and `scale_y_continuous()` to set the x-axis limits to be in the range from 6 am to midnight and the y-axis limits to be in the range (-10, 120).
