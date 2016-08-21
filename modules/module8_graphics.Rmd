@@ -582,7 +582,7 @@ Two basic image types:
 Every pixel of a plot contains its own separate coding; not so great if you want to resize the image
 
 ```{r, eval=FALSE}
-jpeg(filename="example.png", width=, height=)
+jpeg(filename = "example.png", width=, height=)
 plot(x,y)
 dev.off()
 ```
@@ -592,7 +592,7 @@ dev.off()
 Every element of a plot is encoded with a function that gives its coding conditional on several factors; great for resizing
 
 ```{r, eval=FALSE}
-pdf(filename="example.pdf", width=, height=)
+pdf(file = "example.pdf", width=, height=)
 plot(x,y)
 dev.off()
 ```
@@ -603,7 +603,7 @@ dev.off()
 # Assume we saved our plot is an object called example.plot
 
 # lattice
-trellis.device(device="pdf", filename="example.pdf")
+trellis.device(device="pdf", filename = "example.pdf")
 print(example.plot)
 dev.off()
 
