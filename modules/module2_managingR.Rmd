@@ -65,7 +65,7 @@ install.packages('fields')
 That should work without specifying the repository from which to download the package (though sometimes you will be given a menu of repositories from which to select) but sometimes you'll get errors indicating a package is not available for your version of R if you don't include an explicit repository. In this case you'll likely need to use a repository that uses `http` rather than `https`, e.g.,
 
 ```{r eval = FALSE}
-install.packages('fields', repos = 'http://cran.cnr.berkeley.edu) 
+install.packages('fields', repos = 'http://cran.cnr.berkeley.edu') 
 ```
 
 If you're on a network and are not the administrator of the machine, you may need to explicitly tell R to install it in a directory you are able to write in:
@@ -298,7 +298,7 @@ There are several mailing lists that have lots of useful postings. In general if
 - Simple Google searches 
     - You may want to include "in R", with the quotes in the search
     - To search a SIG you might include the name of the SIG in the search string
-    - [Rseek.org](Rseek.org) for Google searches restricted to sites that have information on R
+    - [Rseek.org](http://Rseek.org) for Google searches restricted to sites that have information on R
 
 If you are searching you often want to search for a specific error message. Remember to use double quotes around your error message so it is not broken into individual words by the search engine. 
 
