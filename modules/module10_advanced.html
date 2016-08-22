@@ -295,30 +295,24 @@ mod2$residuals[1:20] # access field with list-like syntax
 </code></pre>
 
 <pre><code>##  [1] predict.ar*                predict.Arima*            
-##  [3] predict.arima0*            predict.bam               
-##  [5] predict.bs*                predict.bSpline*          
-##  [7] predict.fastTps            predict.gam               
-##  [9] predict.glm                predict.glmmPQL*          
-## [11] predict.gls*               predict.gnls*             
-## [13] predict.HoltWinters*       predict.interp.surface    
-## [15] predict.jam*               predict.Krig              
-## [17] predict.lda*               predict.lm                
-## [19] predict.lme*               predict.lmList*           
-## [21] predict.loess*             predict.lqs*              
-## [23] predict.mca*               predict.merMod*           
-## [25] predict.mKrig              predict.mlm*              
-## [27] predict.nbSpline*          predict.nlme*             
-## [29] predict.nls*               predict.npolySpline*      
-## [31] predict.ns*                predict.pbSpline*         
-## [33] predict.polr*              predict.poly*             
-## [35] predict.polySpline*        predict.ppolySpline*      
-## [37] predict.ppr*               predict.prcomp*           
-## [39] predict.princomp*          predict.qda*              
-## [41] predict.qsreg              predict.rlm*              
-## [43] predict.smooth.spline*     predict.smooth.spline.fit*
-## [45] predict.sreg               predict.StructTS*         
-## [47] predict.surface            predict.surface.default   
-## [49] predict.Tps               
+##  [3] predict.arima0*            predict.bs*               
+##  [5] predict.bSpline*           predict.glm               
+##  [7] predict.glmmPQL*           predict.gls*              
+##  [9] predict.gnls*              predict.HoltWinters*      
+## [11] predict.lda*               predict.lm                
+## [13] predict.lme*               predict.lmList*           
+## [15] predict.loess*             predict.lqs*              
+## [17] predict.mca*               predict.merMod*           
+## [19] predict.mlm*               predict.nbSpline*         
+## [21] predict.nlme*              predict.nls*              
+## [23] predict.npolySpline*       predict.ns*               
+## [25] predict.pbSpline*          predict.polr*             
+## [27] predict.poly*              predict.polySpline*       
+## [29] predict.ppolySpline*       predict.ppr*              
+## [31] predict.prcomp*            predict.princomp*         
+## [33] predict.qda*               predict.rlm*              
+## [35] predict.smooth.spline*     predict.smooth.spline.fit*
+## [37] predict.StructTS*         
 ## see &#39;?methods&#39; for accessing help and source code
 </code></pre>
 
@@ -327,7 +321,7 @@ mod2$residuals[1:20] # access field with list-like syntax
 
 <pre><code>## function (object, ...) 
 ## UseMethod(&quot;predict&quot;)
-## &lt;bytecode: 0xffd82c0&gt;
+## &lt;bytecode: 0xfde53f0&gt;
 ## &lt;environment: namespace:stats&gt;
 </code></pre>
 
@@ -566,7 +560,7 @@ for(curDest in Dests) {
             cat(&quot;Fitting model for destination &quot;, curDest, &quot;.\n&quot;)
             tmp &lt;- subset(sub, Dest == curDest)
             curMod &lt;- try(lm(DepDelay ~ Year + Month, data = tmp))
-            if(is(tmp, &quot;try-error&quot;)) mod[[curDest]] &lt;- NA 
+            if(is(curMod, &quot;try-error&quot;)) mod[[curDest]] &lt;- NA 
                        else mod[[curDest]] &lt;- curMod            
 }
 </code></pre>
@@ -596,11 +590,7 @@ for(curDest in Dests) {
 <pre><code class="r">mod[[2]]
 </code></pre>
 
-<pre><code>## [1] &quot;Error in `contrasts&lt;-`(`*tmp*`, value = contr.funs[1 + isOF[nn]]) : \n  contrasts can be applied only to factors with 2 or more levels\n&quot;
-## attr(,&quot;class&quot;)
-## [1] &quot;try-error&quot;
-## attr(,&quot;condition&quot;)
-## &lt;simpleError in `contrasts&lt;-`(`*tmp*`, value = contr.funs[1 + isOF[nn]]): contrasts can be applied only to factors with 2 or more levels&gt;
+<pre><code>## [1] NA
 </code></pre>
 
 <h1>Computing on the language</h1>

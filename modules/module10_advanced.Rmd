@@ -191,7 +191,7 @@ for(curDest in Dests) {
             cat("Fitting model for destination ", curDest, ".\n")
             tmp <- subset(sub, Dest == curDest)
             curMod <- try(lm(DepDelay ~ Year + Month, data = tmp))
-            if(is(tmp, "try-error")) mod[[curDest]] <- NA 
+            if(is(curMod, "try-error")) mod[[curDest]] <- NA 
                        else mod[[curDest]] <- curMod            
 }
 
